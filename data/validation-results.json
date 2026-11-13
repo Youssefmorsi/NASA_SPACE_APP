@@ -1,0 +1,218 @@
+{
+  "source": "https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005587/mooninfo_2026.json",
+  "retrieved": "2026-10-30",
+  "method": "Reconstruct body directions from NASA SVS subpoints. Earth distance is the SVS distance; solar distance is fixed at 1 AU (parallax effect <0.001°). Same ENU transform is separately unit tested. Tests are independent ephemeris/orientation checks, not independent validation of every transform.",
+  "toleranceDegrees": 0.1,
+  "rows": [
+    {
+      "id": "Equator",
+      "latitude": 0,
+      "longitude": 0,
+      "time": "2026-10-30T00:00:00Z",
+      "body": "sun",
+      "referenceSubpoint": {
+        "lon": -50.547,
+        "lat": -1.439
+      },
+      "reference": {
+        "azimuth": 268.1366283394009,
+        "elevation": 39.437617203056824
+      },
+      "actual": {
+        "azimuth": 268.1382327580461,
+        "elevation": 39.43986568230674
+      },
+      "azimuthError": 0.0016044186452290887,
+      "elevationError": 0.002248479249914226
+    },
+    {
+      "id": "Equator",
+      "latitude": 0,
+      "longitude": 0,
+      "time": "2026-10-30T00:00:00Z",
+      "body": "earth",
+      "referenceSubpoint": {
+        "lon": 1.571,
+        "lat": -5.576
+      },
+      "reference": {
+        "azimuth": 164.31430423380652,
+        "elevation": 84.17995781286749
+      },
+      "actual": {
+        "azimuth": 164.3396028931429,
+        "elevation": 84.18235585199443
+      },
+      "azimuthError": 0.025298659336385754,
+      "elevationError": 0.0023980391269446955
+    },
+    {
+      "id": "Shackleton",
+      "latitude": -89.7668,
+      "longitude": -171.87,
+      "time": "2026-10-30T00:00:00Z",
+      "body": "sun",
+      "referenceSubpoint": {
+        "lon": -50.547,
+        "lat": -1.439
+      },
+      "reference": {
+        "azimuth": 121.32779328514044,
+        "elevation": 1.3170944638561852
+      },
+      "actual": {
+        "azimuth": 121.33001452236215,
+        "elevation": 1.3157978595127726
+      },
+      "azimuthError": 0.002221237221647243,
+      "elevationError": 0.0012966043434126107
+    },
+    {
+      "id": "Shackleton",
+      "latitude": -89.7668,
+      "longitude": -171.87,
+      "time": "2026-10-30T00:00:00Z",
+      "body": "earth",
+      "referenceSubpoint": {
+        "lon": 1.571,
+        "lat": -5.576
+      },
+      "reference": {
+        "azimuth": 173.4435457263536,
+        "elevation": 5.072902320764809
+      },
+      "actual": {
+        "azimuth": 173.44042710856297,
+        "elevation": 5.071314910836597
+      },
+      "azimuthError": 0.0031186177906192825,
+      "elevationError": 0.0015874099282120469
+    },
+    {
+      "id": "Malapert",
+      "latitude": -85.9948,
+      "longitude": -0.23578,
+      "time": "2026-11-06T00:00:00Z",
+      "body": "sun",
+      "referenceSubpoint": {
+        "lon": -135.788,
+        "lat": -1.51
+      },
+      "reference": {
+        "azimuth": 224.44386087955127,
+        "elevation": -1.3506002482649393
+      },
+      "actual": {
+        "azimuth": 224.44724366225034,
+        "elevation": -1.351291596425669
+      },
+      "azimuthError": 0.0033827826990773247,
+      "elevationError": 0.0006913481607297989
+    },
+    {
+      "id": "Malapert",
+      "latitude": -85.9948,
+      "longitude": -0.23578,
+      "time": "2026-11-06T00:00:00Z",
+      "body": "earth",
+      "referenceSubpoint": {
+        "lon": 5.546,
+        "lat": 4.119
+      },
+      "reference": {
+        "azimuth": 5.766810918870021,
+        "elevation": -0.39130241488766165
+      },
+      "actual": {
+        "azimuth": 5.764897059520308,
+        "elevation": -0.39012891042225084
+      },
+      "azimuthError": 0.001913859349770064,
+      "elevationError": 0.0011735044654108129
+    },
+    {
+      "id": "Farside",
+      "latitude": 10,
+      "longitude": 150,
+      "time": "2026-03-01T00:00:00Z",
+      "body": "sun",
+      "referenceSubpoint": {
+        "lon": 34.926,
+        "lat": 0.05
+      },
+      "reference": {
+        "azimuth": 274.6988923986788,
+        "elevation": -24.658444637296423
+      },
+      "actual": {
+        "azimuth": 274.6991191110942,
+        "elevation": -24.652185952337604
+      },
+      "azimuthError": 0.0002267124153831901,
+      "elevationError": 0.006258684958819316
+    },
+    {
+      "id": "Farside",
+      "latitude": 10,
+      "longitude": 150,
+      "time": "2026-03-01T00:00:00Z",
+      "body": "earth",
+      "referenceSubpoint": {
+        "lon": 3.782,
+        "lat": -3.376
+      },
+      "reference": {
+        "azimuth": 278.815716674028,
+        "elevation": -55.97485874477892
+      },
+      "actual": {
+        "azimuth": 278.8177003872746,
+        "elevation": -55.97337480366845
+      },
+      "azimuthError": 0.0019837132465454488,
+      "elevationError": 0.001483941110471676
+    },
+    {
+      "id": "North",
+      "latitude": 85,
+      "longitude": 80,
+      "time": "2026-01-01T00:00:00Z",
+      "body": "sun",
+      "referenceSubpoint": {
+        "lon": 32.52,
+        "lat": -1.346
+      },
+      "reference": {
+        "azimuth": 227.50213403735663,
+        "elevation": 2.033026221696597
+      },
+      "actual": {
+        "azimuth": 227.49613951845106,
+        "elevation": 2.0350163695251475
+      },
+      "azimuthError": 0.005994518905595214,
+      "elevationError": 0.001990147828550448
+    },
+    {
+      "id": "North",
+      "latitude": 85,
+      "longitude": 80,
+      "time": "2026-01-01T00:00:00Z",
+      "body": "earth",
+      "referenceSubpoint": {
+        "lon": -1.279,
+        "lat": -6.556
+      },
+      "reference": {
+        "azimuth": 260.74519063906854,
+        "elevation": -6.048559337447281
+      },
+      "actual": {
+        "azimuth": 260.7432474767347,
+        "elevation": -6.047584949207562
+      },
+      "azimuthError": 0.0019431623338732606,
+      "elevationError": 0.0009743882397188486
+    }
+  ]
+}

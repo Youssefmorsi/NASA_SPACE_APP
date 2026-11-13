@@ -1,0 +1,38 @@
+{
+  "name": "lunarsight",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --import tsx backend/server.ts",
+    "build": "tsc --noEmit && vite build",
+    "start": "NODE_ENV=production node --import tsx backend/server.ts",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "validate:science": "node --import tsx science/validate.ts",
+    "test:e2e": "playwright test",
+    "demo:build": "node --import tsx science/build-examples.ts"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^6.1.2",
+    "astronomy-engine": "^2.1.19",
+    "express": "^5.3.0",
+    "lucide-react": "^1.65.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "recharts": "^3.10.1",
+    "three": "^0.187.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "^0.187.0",
+    "prettier": "^3.9.10"
+  }
+}

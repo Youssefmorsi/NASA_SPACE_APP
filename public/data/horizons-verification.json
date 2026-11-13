@@ -1,0 +1,132 @@
+{
+  "method": "Independent fixed-width TLIST API queries compared with application CSV/range parser; not independent ephemeris validation or a manual web-UI check.",
+  "directions": 18,
+  "checks": [
+    {
+      "location": "South polar reference",
+      "time": "2026-11-13T00:00:00.000Z",
+      "target": "sun",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "South polar reference",
+      "time": "2026-11-16T00:00:00.000Z",
+      "target": "sun",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "South polar reference",
+      "time": "2026-11-20T00:00:00.000Z",
+      "target": "sun",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "South polar reference",
+      "time": "2026-11-13T00:00:00.000Z",
+      "target": "earth",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "South polar reference",
+      "time": "2026-11-16T00:00:00.000Z",
+      "target": "earth",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "South polar reference",
+      "time": "2026-11-20T00:00:00.000Z",
+      "target": "earth",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "Southern reference \u00b7 45\u00b0E",
+      "time": "2026-11-13T00:00:00.000Z",
+      "target": "sun",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "Southern reference \u00b7 45\u00b0E",
+      "time": "2026-11-16T00:00:00.000Z",
+      "target": "sun",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "Southern reference \u00b7 45\u00b0E",
+      "time": "2026-11-20T00:00:00.000Z",
+      "target": "sun",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "Southern reference \u00b7 45\u00b0E",
+      "time": "2026-11-13T00:00:00.000Z",
+      "target": "earth",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "Southern reference \u00b7 45\u00b0E",
+      "time": "2026-11-16T00:00:00.000Z",
+      "target": "earth",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "Southern reference \u00b7 45\u00b0E",
+      "time": "2026-11-20T00:00:00.000Z",
+      "target": "earth",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "Nearside reference",
+      "time": "2026-11-13T00:00:00.000Z",
+      "target": "sun",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "Nearside reference",
+      "time": "2026-11-16T00:00:00.000Z",
+      "target": "sun",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "Nearside reference",
+      "time": "2026-11-20T00:00:00.000Z",
+      "target": "sun",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "Nearside reference",
+      "time": "2026-11-13T00:00:00.000Z",
+      "target": "earth",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "Nearside reference",
+      "time": "2026-11-16T00:00:00.000Z",
+      "target": "earth",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    },
+    {
+      "location": "Nearside reference",
+      "time": "2026-11-20T00:00:00.000Z",
+      "target": "earth",
+      "azimuthDifferenceDeg": 0.0,
+      "elevationDifferenceDeg": 0.0
+    }
+  ]
+}

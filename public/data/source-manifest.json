@@ -1,0 +1,72 @@
+{
+  "updated": "2026-11-13",
+  "policy": "Only the three required resources and directly connected official services supply active scientific information.",
+  "datasets": [
+    {
+      "id": "trek-wac",
+      "title": "LRO WAC Mosaic Global 303ppd v02",
+      "provider": "NASA Moon Trek / LROC",
+      "documentation": "https://trek.nasa.gov/tiles/apidoc/trekAPI.html?body=moon",
+      "capabilities": "https://trek.nasa.gov/tiles/Moon/EQ/LRO_WAC_Mosaic_Global_303ppd_v02/1.0.0/WMTSCapabilities.xml",
+      "localCapabilities": "/data/trek-wac-capabilities.xml",
+      "tileList": "/data/trek-tile-urls.json",
+      "retrieved": "2026-11-13",
+      "coverage": "Global -180..180 longitude, -90..90 latitude",
+      "displayResolution": "2048 \u00d7 1024 pixels, WMTS matrix 2, 0.17578125 degrees per pixel; source name indicates 303 pixels per degree, not retained at display scale",
+      "projection": "Equirectangular; EPSG:104903 as advertised in service capabilities",
+      "frameCaution": "Landing-precision compatibility with Horizons MEAN_ME has not been established. Display coordinates are approximate, not surveyed.",
+      "units": "RGB display intensity, not terrain elevation",
+      "use": "Real globe imagery; illustrative lighting only",
+      "status": "integrated"
+    },
+    {
+      "id": "quickmap-nac",
+      "title": "LROC NAC observation M1463278603LC",
+      "provider": "LROC QuickMap features service / LROC archive",
+      "entry": "https://quickmap.lroc.im-ldi.com/",
+      "service": "https://features-api.quickmap.io/collections/nac.geojson?limit=1",
+      "product": "https://data.lroc.im-ldi.com/lroc/view_lroc/LRO-L-LROC-3-CDR-V1.0/M1463278603LC",
+      "local": "/data/quickmap-observation.json",
+      "retrieved": "2026-11-13",
+      "acquisition": "2024-02-22 22:02:16.567+00",
+      "coverage": "Only the polygon in the archived GeoJSON record",
+      "coordinates": "Longitude/latitude degrees; product footprint on display sphere, not a precision control network",
+      "resolution": "Footprint vertices rounded to 0.01 degree in returned record. Image pixel resolution is not used for hazard assessment.",
+      "use": "Observation center catalog entry, acquisition metadata, rendered footprint and original product link",
+      "status": "integrated; no numeric terrain data imported"
+    },
+    {
+      "id": "horizons",
+      "title": "Lunar surface Sun and Earth observer ephemerides",
+      "provider": "NASA/JPL Horizons",
+      "entry": "https://ssd.jpl.nasa.gov/horizons/",
+      "documentation": "https://ssd-api.jpl.nasa.gov/doc/horizons.html",
+      "targets": [
+        10,
+        399
+      ],
+      "observer": "coord@301",
+      "coordinates": "MEAN_ME lunar geodetic, east longitude positive; height km above Horizons reference sphere",
+      "units": "degrees, UTC timestamps for supported dates",
+      "corrections": "Quantity 4 apparent airless body-center azimuth/elevation",
+      "resolution": "User-selected time interval; samples interpolated linearly for crossings",
+      "retrieval": "Recorded individually in each result and original-response cache",
+      "use": "All active temporal calculations",
+      "status": "integrated; three genuine cached examples"
+    }
+  ],
+  "referencePoints": "Four mathematical reference coordinates plus one QuickMap observation center. None is claimed to be an approved landing site.",
+  "unavailable": [
+    "Terrain-aware horizon",
+    "Numeric slope or roughness",
+    "Rock/crater landing hazards",
+    "Communication link budget",
+    "Landing safety rating",
+    "Solar eclipse screening in derived Sun availability"
+  ],
+  "legacyExcluded": [
+    "Astronomy Engine outputs",
+    "NASA SVS validation table",
+    "Surface Data Book study site catalog"
+  ]
+}
