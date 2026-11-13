@@ -15,3 +15,11 @@ Production build and three targeted desktop/mobile/WebGL-fallback browser checks
 ## Interface refinement
 
 Refined the full-width explorer with a clearer primary action, live coordinate/time readout and view-offset composition that gives the Moon and text their own space. The mission planner remains below the scene, with a section heading, larger date/coordinate controls and selectable reference cards. Shared navigation, panel, form and typography styling now carries through Analyze, Compare and Sources. Mobile projection fits the lunar disc within the viewport below the heading and actions. Nine browser journeys passed during refinement; mobile layout and raycast/focus were rechecked after the final camera adjustment.
+
+## Grey / white theme
+
+Changed the interface to a neutral grey/white palette with soft charcoal panel fades and white-to-silver primary actions. Navigation, location markers, form focus, scrollbar and selection states use monochrome contrast. Charts distinguish scenarios by brightness and Sun/Earth by solid/dashed lines. The decorative Earth and Sun keep their natural illustrative colours; these are separate from the interface palette.
+
+## Current requested palette
+
+Applied #021024 (deep background), #052659 (navy surfaces), #5483B3 (steel-blue accents), #7DA0CA (secondary text), and #C1E8FF (primary text/highlights). Surfaces and actions use soft fades within that palette. Site-wide condensed display typography follows the user's SPACE lettering reference. Chart brightness and line patterns preserve distinctions. Earth/Sun artwork retains illustrative natural colours.

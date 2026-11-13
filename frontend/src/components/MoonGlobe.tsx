@@ -68,8 +68,8 @@ export default function MoonGlobe({
     controls.minDistance = 1.6;
     controls.maxDistance = 5;
     controls.autoRotateSpeed = 0.5;
-    scene.add(new T.AmbientLight(0xb6c8e6, 0.22));
-    const light = new T.DirectionalLight(0xfff6e7, 3.3);
+    scene.add(new T.AmbientLight(0xe0e0e0, 0.22));
+    const light = new T.DirectionalLight(0xffffff, 3.3);
     light.position.set(4, 3, 2);
     scene.add(light);
     const texture = new T.TextureLoader().load(
@@ -93,11 +93,11 @@ export default function MoonGlobe({
         point(lat, lon, 1.005),
       ),
     );
-    const footprintMat = new T.LineBasicMaterial({ color: 0xff493e });
+    const footprintMat = new T.LineBasicMaterial({ color: 0xffffff });
     scene.add(new T.Line(footprintGeo, footprintMat));
     const pins: T.Mesh[] = [];
     const pinGeo = new T.SphereGeometry(0.008, 12, 8);
-    const pinMat = new T.MeshBasicMaterial({ color: 0xa3c7ff });
+    const pinMat = new T.MeshBasicMaterial({ color: 0x999999 });
     for (const s of catalog) {
       const p = new T.Mesh(pinGeo, pinMat);
       p.position.copy(point(s.latitude, s.longitude, 1.006));
@@ -105,7 +105,7 @@ export default function MoonGlobe({
       pins.push(p);
     }
     const activeGeo = new T.SphereGeometry(0.012, 20, 12),
-      activeMat = new T.MeshBasicMaterial({ color: 0xff493e }),
+      activeMat = new T.MeshBasicMaterial({ color: 0xffffff }),
       active = new T.Mesh(activeGeo, activeMat);
     scene.add(active);
     let destination: T.Vector3 | null = null;

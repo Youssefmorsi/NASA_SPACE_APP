@@ -252,11 +252,9 @@ export default function App() {
           onClick={() => setPage("Explore")}
           aria-label="LunarSight home"
         >
-          <span className="brand-moon" />
-          <span>
-            LUNAR
-            <br />
-            SIGHT<span className="brand-dot">.</span>
+          <span className="text-wordmark" aria-hidden="true">
+            <span className="wordmark-top">Lunar</span>
+            <span className="wordmark-bottom">SIGHT</span>
           </span>
         </button>
         <nav aria-label="Main navigation">
@@ -1069,9 +1067,10 @@ export default function App() {
                         </div>
                       ))}
                       <p className="fine">
-                        Blue / light blue: scenario 1 Sun / Earth. Red / grey:
-                        scenario 2 Sun / Earth. Missing coverage is never
-                        extrapolated. Tracks each show their own mission window.
+                        Pale blue: scenario 1. Steel blue: scenario 2. Solid
+                        lines: Sun; dashed lines: Earth. Missing coverage is
+                        never extrapolated. Tracks each show their own mission
+                        window.
                       </p>
                     </section>
                   </>
@@ -1240,7 +1239,10 @@ export default function App() {
       </main>
       <footer>
         <div className="footer-brand">
-          LUNARSIGHT<span>.</span>
+          <span className="text-wordmark" aria-label="LunarSight">
+            <span className="wordmark-top">Lunar</span>
+            <span className="wordmark-bottom">SIGHT</span>
+          </span>
           <small>LUNAR SURFACE PLANNING</small>
         </div>
         <p>
@@ -1441,7 +1443,7 @@ function ElevationChart({
           margin={{ top: 12, right: 15, bottom: 5, left: -18 }}
         >
           <CartesianGrid
-            stroke="#202632"
+            stroke="#262626"
             strokeDasharray="2 6"
             vertical={false}
           />
@@ -1454,10 +1456,10 @@ function ElevationChart({
                 ? `${t}h`
                 : new Date(t).toISOString().slice(5, 16).replace("T", " ")
             }
-            tick={{ fill: "#8894a7", fontSize: 10 }}
+            tick={{ fill: "#939393", fontSize: 10 }}
             minTickGap={60}
           />
-          <YAxis unit="°" tick={{ fill: "#8894a7", fontSize: 10 }} />
+          <YAxis unit="°" tick={{ fill: "#939393", fontSize: 10 }} />
           <Tooltip
             labelFormatter={(t) =>
               elapsed
@@ -1466,22 +1468,22 @@ function ElevationChart({
             }
             formatter={(v) => [typeof v === "number" ? v.toFixed(2) + "°" : v]}
             contentStyle={{
-              background: "#101722",
-              border: "1px solid #465268",
-              color: "#fff",
+              background: "#161616",
+              border: "1px solid #515151",
+              color: "#ffffff",
             }}
           />
-          <ReferenceLine y={0} stroke="#5b6677" />
+          <ReferenceLine y={0} stroke="#656565" />
           {thresholds && (
             <>
               <ReferenceLine
                 y={results[0].result.request.minimumSunElevation}
-                stroke="#e9bb68"
+                stroke="#bfbfbf"
                 strokeDasharray="3 4"
               />
               <ReferenceLine
                 y={results[0].result.request.minimumEarthElevation}
-                stroke="#9cbfff"
+                stroke="#bcbcbc"
                 strokeDasharray="3 4"
               />
             </>
@@ -1492,13 +1494,7 @@ function ElevationChart({
               type="linear"
               dataKey={`sun${i}`}
               name={`${r.name} · Sun`}
-              stroke={
-                results.length === 1
-                  ? "#e9bb68"
-                  : i === 0
-                    ? "#377cf2"
-                    : "#ff6258"
-              }
+              stroke={i === 0 ? "#c1e8ff" : "#5483b3"}
               dot={false}
               strokeWidth={2}
               isAnimationActive={false}
@@ -1509,7 +1505,13 @@ function ElevationChart({
               type="linear"
               dataKey={`earth${i}`}
               name={`${r.name} · Earth`}
-              stroke={i === 0 ? "#a2c6ff" : "#b7bbc4"}
+              stroke={
+                results.length === 1
+                  ? "#7da0ca"
+                  : i === 0
+                    ? "#c1e8ff"
+                    : "#5483b3"
+              }
               dot={false}
               strokeWidth={2}
               strokeDasharray="5 4"
