@@ -31,3 +31,7 @@ Moon Trek's WAC imagery is a display texture, not a DEM. The QuickMap NAC footpr
 Terrain horizons/shadows; eclipses in derived availability; slopes, boulders or landing hazards; spacecraft performance; electrical power; Earth station/antenna visibility or radio link budget. Results are educational planning estimates, not landing certification.
 
 Reference: https://ssd.jpl.nasa.gov/horizons/manual.html and https://ssd-api.jpl.nasa.gov/doc/horizons.html
+
+## Optional apparent-disk screening
+
+The separate `solar-disk` adapter requests quantities 4, 13 and 20, checks lunar/airless metadata and kilometre units, validates matching full time coverage, and derives upper-limb Sun elevation and approximate apparent disk overlap. The function uses analytic circle-intersection area and angular separation of apparent azimuth/elevation directions. Earth must be closer to the observer than the Sun. The sampled overlap output is not integrated into the threshold availability and cannot establish exact event times. See FEATURE_SOURCES.md for limitations.

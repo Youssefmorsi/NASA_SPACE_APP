@@ -163,7 +163,7 @@ export function summarize(r: Mission, samples: Sample[]) {
   };
 }
 let queue = Promise.resolve();
-function serialized<T>(fn: () => Promise<T>): Promise<T> {
+export function serialized<T>(fn: () => Promise<T>): Promise<T> {
   const p = queue.then(fn);
   queue = p.then(
     () => {},

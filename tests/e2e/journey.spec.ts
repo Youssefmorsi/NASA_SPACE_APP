@@ -183,3 +183,80 @@ test("location panel is below the scene and mission date/time carry into analysi
     page.getByLabel("Start date & time (UTC)", { exact: true }),
   ).toHaveValue("2026-12-05T14:30");
 });
+
+test("verified historical catalog and archived NAC footprints are selectable", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("combobox", { name: "Location category", exact: true })
+    .selectOption("historical");
+  await page.getByRole("button", { name: /Apollo 11 · lunar module/ }).click();
+  await expect(
+    page.getByRole("link", { name: "Verified coordinate source" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Apollo 11 · lunar module" }),
+  ).toBeVisible();
+  await page
+    .getByText("Find LROC NAC image footprints", { exact: true })
+    .click();
+  await page.getByRole("button", { name: "Load archived example" }).click();
+  await expect(
+    page.getByText("12 returned observations", { exact: false }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: /Focus image centre/ })
+    .first()
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Custom location" }),
+  ).toBeVisible();
+  await expect(page.locator(".observation.selected")).toHaveCount(1);
+  await page.screenshot({ path: "docs/surface-tools.png", fullPage: true });
+});
+test("map layer coverage and missing tiles are explicit", async ({ page }) => {
+  await page.route("**/api/tile/**", (r) => r.fulfill({ status: 404 }));
+  await page.goto("/");
+  await page
+    .getByText("Local imagery, hillshade & polar layers", { exact: true })
+    .click();
+  await page
+    .getByRole("combobox", { name: "Map layer", exact: true })
+    .selectOption("psr");
+  await expect(
+    page.getByRole("img", {
+      name: "Moon Trek regional map with selected coordinate",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("tile(s) unavailable", { exact: false }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: /Nearside reference/ }).click();
+  await expect(
+    page.getByText("This layer has no coverage", { exact: false }),
+  ).toBeVisible();
+});
+test("cached solar disk geometry has provenance and does not replace availability", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Plan this location" }).click();
+  await page.getByRole("button", { name: "Calculate conditions" }).click();
+  await expect(
+    page.getByText("Requirement checks", { exact: true }),
+  ).toBeVisible();
+  await page
+    .getByText("Solar disk & eclipse screening", { exact: true })
+    .click();
+  await page.getByRole("button", { name: "Open cached disk example" }).click();
+  await expect(
+    page.getByText("MAX SAMPLED SUN OCCULTATION", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("NASA/JPL Horizons quantities 4, 13, 20", { exact: false }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Requirement checks", { exact: true }),
+  ).toBeVisible();
+});

@@ -4,6 +4,9 @@ import { catalog } from "../data/catalog.ts";
 import { z, ZodError } from "zod";
 import path from "node:path";
 import { readFile } from "node:fs/promises";
+import { searchNac } from "../science/surface.ts";
+import { solarDisk } from "../science/solar-disk.ts";
+import layers from "../data/surface-layers.json" with { type: "json" };
 const app = express();
 app.use(express.json({ limit: "100kb" }));
 app.get("/api/health", (_req, res) =>
@@ -41,11 +44,71 @@ app.get("/api/raw/:key", async (req, res, next) => {
         await readFile(`data/horizons-cache/${req.params.key}.json`, "utf8"),
       );
   } catch {
-    res
-      .status(404)
-      .json({
-        error: { message: "Original response is not available on this server" },
-      });
+    res.status(404).json({
+      error: { message: "Original response is not available on this server" },
+    });
+  }
+});
+app.get("/api/nac", async (req, res, next) => {
+  try {
+    res.json(await searchNac(req.query));
+  } catch (e) {
+    next(e);
+  }
+});
+app.post("/api/solar-disk", async (req, res, next) => {
+  try {
+    res.json(await solarDisk(req.body));
+  } catch (e) {
+    next(e);
+  }
+});
+const tileCache = new Map<string, { bytes: Buffer; type: string }>();
+app.get("/api/tile/:layer/:z/:y/:x", async (req, res, next) => {
+  try {
+    const layer = layers.find((l) => l.id === req.params.layer);
+    if (!layer) {
+      res.status(404).end();
+      return;
+    }
+    const coords = z
+      .object({
+        z: z.coerce.number().int().min(0).max(layer.maxZoom),
+        x: z.coerce.number().int().min(0),
+        y: z.coerce.number().int().min(0),
+      })
+      .parse(req.params);
+    if (coords.x >= 2 ** (coords.z + 1) || coords.y >= 2 ** coords.z) {
+      res.status(400).end();
+      return;
+    }
+    const key = `${layer.id}/${coords.z}/${coords.y}/${coords.x}`;
+    const hit = tileCache.get(key);
+    if (hit) {
+      res.type(hit.type).send(hit.bytes);
+      return;
+    }
+    const url = `https://trek.nasa.gov/tiles/Moon/EQ/${layer.product}/1.0.0/default/default028mm/${coords.z}/${coords.y}/${coords.x}.${layer.extension}`;
+    const response = await fetch(url, { signal: AbortSignal.timeout(20000) });
+    if (!response.ok) {
+      res.status(404).end();
+      return;
+    }
+    const type = response.headers.get("content-type") || "";
+    if (!type.startsWith("image/")) {
+      res.status(502).end();
+      return;
+    }
+    const bytes = Buffer.from(await response.arrayBuffer());
+    if (bytes.length > 2000000) {
+      res.status(502).end();
+      return;
+    }
+    if (tileCache.size >= 128) tileCache.delete(tileCache.keys().next().value!);
+    tileCache.set(key, { bytes, type });
+    res.set("Cache-Control", "public, max-age=86400").type(type).send(bytes);
+  } catch (e) {
+    next(e);
   }
 });
 app.use("/api", (_req, res) =>

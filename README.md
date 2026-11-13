@@ -66,3 +66,9 @@ The Analyze page now offers a sampled azimuth/elevation sky view, estimated next
 Explore includes a schematic coordinate map of the south polar region. Compare includes common UTC/elapsed visibility tracks with shaded coverage. Neither represents a terrain elevation model.
 
 Terrain data and frame registration, a sourced candidate-site catalog, manual Horizons web-interface spot checks, and hosted deployment remain outstanding. No terrain-corrected results should be presented until the documented data and validation prerequisites are met.
+
+## Surface evidence tools
+
+Explore now includes six verified historical Apollo locations, bounded QuickMap NAC observation searches and selectable footprints. Below mission setup, open **Surface evidence** for on-demand WAC detail, LOLA hillshade, polar PSR and colourized slope layers. These are contextual images, not numeric terrain screening. Analyze includes an optional **Solar disk & eclipse screening** tool using Horizons quantities 4, 13 and 20. It does not modify the main availability values.
+
+See [feature sources and limitations](docs/FEATURE_SOURCES.md). Numeric terrain downloads were inaccessible during implementation; no terrain-corrected visibility or numeric slope percentages are claimed.
