@@ -19,3 +19,7 @@ The new Playwright browser download encountered DNS failure. Tests ran successfu
 Numeric terrain, local obstruction/shadows, solar eclipse screening, hazard classification, power model, link budget and landing safety are not implemented. Landing-precision alignment of mapping products with Horizons MEAN_ME remains unverified. Named historical/candidate landing-site catalog verification remains future work; active locations are mathematical references plus one sourced observation center.
 
 No hosted deployment. No manual comparison with the Horizons web UI was performed. Vite's large chart/Three.js chunk warning remains; the globe is lazy-loaded. Docker image was not tested.
+
+## Latest interface and scrollbar verification
+
+Added a visible right-side native scrollbar with a stable gutter and contrasting thumb. Production build, all 40 Node checks and mobile navigation/no-overflow test passed. The prior full nine-journey browser suite also passed during the interface refinement, followed by mobile/raycast rechecks after the final camera adjustment.

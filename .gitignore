@@ -10,3 +10,6 @@ __pycache__/
 .env.*
 !.env.example
 *.log
+
+# Keep shipped ephemerides tracked; ignore additional runtime responses.
+data/horizons-cache/*.json

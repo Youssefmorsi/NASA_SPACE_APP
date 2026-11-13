@@ -3,7 +3,7 @@ test("real globe, location selection and sourced observation", async ({
   page,
 }) => {
   await page.goto("/");
-  await expect(page.locator("canvas")).toBeVisible();
+  await expect(page.locator(".globe-canvas canvas")).toBeVisible();
   await expect(page.getByText("Loading LROC imagery…")).toHaveCount(0);
   await page.getByRole("button", { name: /LROC observation center/ }).click();
   await expect(
@@ -12,7 +12,7 @@ test("real globe, location selection and sourced observation", async ({
   await expect(
     page.getByText("58.450°S", { exact: false }).first(),
   ).toBeVisible();
-  await expect(page.locator("canvas")).toHaveAttribute(
+  await expect(page.locator(".globe-canvas canvas")).toHaveAttribute(
     "data-camera-settled",
     "true",
   );
@@ -90,8 +90,8 @@ test("mobile navigation and comparison have no horizontal overflow", async ({
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  await expect(page.locator("canvas")).toBeVisible();
-  await expect(page.locator("canvas")).toHaveAttribute(
+  await expect(page.locator(".globe-canvas canvas")).toBeVisible();
+  await expect(page.locator(".globe-canvas canvas")).toHaveAttribute(
     "data-camera-settled",
     "true",
   );
@@ -115,7 +115,7 @@ test("globe raycast selects real surface coordinates and antipodal focus settles
   page,
 }) => {
   await page.goto("/");
-  const canvas = page.locator("canvas");
+  const canvas = page.locator(".globe-canvas canvas");
   await expect(canvas).toHaveAttribute("data-camera-settled", "true");
   const box = await canvas.boundingBox();
   if (!box) throw Error("No canvas");
@@ -163,4 +163,23 @@ test("cached examples work without external requests and invalid requirements ar
   await expect(page.getByRole("alert")).toContainText(
     "Enter valid mission requirements",
   );
+});
+
+test("location panel is below the scene and mission date/time carry into analysis", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const scene = await page.locator(".explorer").boundingBox();
+  const panel = await page
+    .getByRole("region", { name: "Location and mission time" })
+    .boundingBox();
+  expect(scene && panel && panel.y >= scene.y + scene.height).toBeTruthy();
+  await page
+    .getByLabel("Mission date (UTC)", { exact: true })
+    .fill("2026-12-05");
+  await page.getByLabel("Mission time (UTC)", { exact: true }).fill("14:30");
+  await page.getByRole("button", { name: "Plan this location" }).click();
+  await expect(
+    page.getByLabel("Start date & time (UTC)", { exact: true }),
+  ).toHaveValue("2026-12-05T14:30");
 });

@@ -50,6 +50,8 @@ export default function MoonGlobe({
     }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.outputColorSpace = T.SRGBColorSpace;
+    renderer.toneMapping = T.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
     renderer.setClearColor(0, 0);
     renderer.domElement.setAttribute(
       "aria-label",
@@ -66,8 +68,8 @@ export default function MoonGlobe({
     controls.minDistance = 1.6;
     controls.maxDistance = 5;
     controls.autoRotateSpeed = 0.5;
-    scene.add(new T.AmbientLight(0xffffff, 2));
-    const light = new T.DirectionalLight(0xffffff, 2);
+    scene.add(new T.AmbientLight(0xb6c8e6, 0.22));
+    const light = new T.DirectionalLight(0xfff6e7, 3.3);
     light.position.set(4, 3, 2);
     scene.add(light);
     const texture = new T.TextureLoader().load(
@@ -94,7 +96,7 @@ export default function MoonGlobe({
     const footprintMat = new T.LineBasicMaterial({ color: 0xff493e });
     scene.add(new T.Line(footprintGeo, footprintMat));
     const pins: T.Mesh[] = [];
-    const pinGeo = new T.SphereGeometry(0.013, 12, 8);
+    const pinGeo = new T.SphereGeometry(0.008, 12, 8);
     const pinMat = new T.MeshBasicMaterial({ color: 0xa3c7ff });
     for (const s of catalog) {
       const p = new T.Mesh(pinGeo, pinMat);
@@ -102,7 +104,7 @@ export default function MoonGlobe({
       scene.add(p);
       pins.push(p);
     }
-    const activeGeo = new T.SphereGeometry(0.022, 20, 12),
+    const activeGeo = new T.SphereGeometry(0.012, 20, 12),
       activeMat = new T.MeshBasicMaterial({ color: 0xff493e }),
       active = new T.Mesh(activeGeo, activeMat);
     scene.add(active);
@@ -162,6 +164,17 @@ export default function MoonGlobe({
         h = el.clientHeight;
       renderer.setSize(w, h);
       camera.aspect = w / h;
+      camera.fov =
+        w <= 800
+          ? (2 *
+              Math.atan(((Math.tan((35 * Math.PI) / 360) * h) / w) * 1.15) *
+              180) /
+            Math.PI
+          : 35;
+      if (!document.fullscreenElement) {
+        if (w > 800) camera.setViewOffset(w, h, -w * 0.13, -h * 0.04, w, h);
+        else camera.setViewOffset(w, h, 0, -h * 0.17, w, h);
+      } else camera.clearViewOffset();
       camera.updateProjectionMatrix();
     });
     resize.observe(el);
@@ -187,6 +200,10 @@ export default function MoonGlobe({
       }
       controls.autoRotate = spin.current && !destination;
       controls.update();
+      // View-relative studio sun: consistent relief while inspecting any location.
+      light.position.copy(
+        new T.Vector3(-2.5, 2, 4).applyQuaternion(camera.quaternion),
+      );
       renderer.render(scene, camera);
       frame = requestAnimationFrame(animate);
     };

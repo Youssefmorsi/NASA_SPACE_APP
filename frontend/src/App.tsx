@@ -305,16 +305,59 @@ export default function App() {
               <SpaceBackdrop />
               <div className="hero-heading">
                 <span className="kicker">
-                  <span className="red-line" /> OUR NEXT HORIZON
+                  <span className="red-line" /> LUNAR SURFACE EXPLORER
                 </span>
                 <h1>
                   THE MOON<span>.</span>
                 </h1>
                 <p>
-                  Choose a point.
-                  <br />
-                  Understand the conditions.
+                  Explore the surface. Find your window.
+                  <span className="hero-description">
+                    Compare sunlight and Earth visibility for the place and time
+                    you choose.
+                  </span>
                 </p>
+                <div className="hero-actions">
+                  <button
+                    className="primary"
+                    onClick={() =>
+                      document
+                        .getElementById("mission-planner")
+                        ?.scrollIntoView({
+                          behavior: matchMedia(
+                            "(prefers-reduced-motion: reduce)",
+                          ).matches
+                            ? "instant"
+                            : "smooth",
+                          block: "start",
+                        })
+                    }
+                  >
+                    Set mission window <ArrowRight size={17} />
+                  </button>
+                  <button className="text-link" onClick={examples}>
+                    View example scenarios <ArrowUpRight size={16} />
+                  </button>
+                </div>
+              </div>
+              <div
+                className="scene-readout"
+                aria-label="Selected mission overview"
+              >
+                <div>
+                  <span>SELECTED COORDINATES</span>
+                  <strong>
+                    {coord(form.latitude, "N", "S")} <i>/</i>{" "}
+                    {coord(form.longitude, "E", "W")}
+                  </strong>
+                </div>
+                <div>
+                  <span>MISSION START · UTC</span>
+                  <strong>
+                    {form.startTime.slice(0, 10)} <i>/</i>{" "}
+                    {form.startTime.slice(11, 16)}
+                  </strong>
+                </div>
               </div>
               <div className="moon-stage">
                 <Suspense
@@ -334,8 +377,22 @@ export default function App() {
                   ILLUSTRATIVE SPACE SCENE · DRAG TO ORBIT · CLICK TO SELECT
                 </span>
               </div>
-              <div className="explore-panel">
-                <span className="kicker">01 / YOUR LOCATION</span>
+            </section>
+            <section
+              className="explore-panel"
+              id="mission-planner"
+              aria-label="Location and mission time"
+            >
+              <div className="planner-heading">
+                <span className="kicker">01 / MISSION SETUP</span>
+                <h2>A place. A time. A plan.</h2>
+                <p>
+                  Choose your location and start time, then review the
+                  conditions.
+                </p>
+              </div>
+              <div className="location-info">
+                <span className="kicker">YOUR LOCATION</span>
                 <div className="panel-title">
                   <h2>{name}</h2>
                   <LocateFixed size={22} />
@@ -376,6 +433,43 @@ export default function App() {
                     onChange={(v) => select(form.latitude, v)}
                   />
                 </div>
+                <div className="mission-time-fields">
+                  <label>
+                    Mission date (UTC)
+                    <input
+                      type="date"
+                      min="2000-01-01"
+                      max="2099-12-31"
+                      value={form.startTime.slice(0, 10)}
+                      onChange={(e) => {
+                        if (e.target.value)
+                          change(
+                            "startTime",
+                            `${e.target.value}T${form.startTime.slice(11, 16)}:00Z`,
+                          );
+                      }}
+                    />
+                  </label>
+                  <label>
+                    Mission time (UTC)
+                    <input
+                      type="time"
+                      step="60"
+                      value={form.startTime.slice(11, 16)}
+                      onChange={(e) => {
+                        if (e.target.value)
+                          change(
+                            "startTime",
+                            `${form.startTime.slice(0, 10)}T${e.target.value.slice(0, 5)}:00Z`,
+                          );
+                      }}
+                    />
+                  </label>
+                </div>
+                <p className="fine">
+                  Start of your mission window. These settings carry through to
+                  the analysis.
+                </p>
                 <button
                   className="primary wide"
                   onClick={() => {
@@ -384,56 +478,52 @@ export default function App() {
                 >
                   Plan this location <ArrowRight size={17} />
                 </button>
-                <div className="site-list">
-                  <div className="list-header">
-                    <span className="kicker">REFERENCE POINTS</span>
-                    <span>{String(catalog.length).padStart(2, "0")}</span>
-                  </div>
-                  <input
-                    aria-label="Search locations"
-                    placeholder="Find a reference point…"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                  {catalog
-                    .filter((s) =>
-                      s.name.toLowerCase().includes(search.toLowerCase()),
-                    )
-                    .map((s, i) => (
-                      <button
-                        key={s.id}
-                        className={
-                          selectedId === s.id ? "site selected" : "site"
-                        }
-                        onClick={() =>
-                          select(s.latitude, s.longitude, s.id, s.name)
-                        }
-                      >
-                        <span className="site-num">0{i + 1}</span>
-                        <span>
-                          {s.name}
-                          <small>
-                            {coord(s.latitude, "N", "S")} /{" "}
-                            {coord(s.longitude, "E", "W")}
-                          </small>
-                        </span>
-                        <ArrowUpRight size={16} />
-                      </button>
-                    ))}
-                </div>
               </div>
-              <div className="explore-bottom">
-                <div>
-                  <span className="kicker">
-                    A VIEW. A LOCATION. A DECISION.
-                  </span>
-                  <p>Explore the surface. Compare the evidence.</p>
+              <div className="site-list">
+                <div className="list-header">
+                  <span className="kicker">REFERENCE POINTS</span>
+                  <span>{String(catalog.length).padStart(2, "0")}</span>
                 </div>
-                <button className="text-link" onClick={examples}>
-                  Open example comparison <ArrowUpRight size={18} />
-                </button>
+                <input
+                  aria-label="Search locations"
+                  placeholder="Find a reference point…"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                {catalog
+                  .filter((s) =>
+                    s.name.toLowerCase().includes(search.toLowerCase()),
+                  )
+                  .map((s, i) => (
+                    <button
+                      key={s.id}
+                      className={selectedId === s.id ? "site selected" : "site"}
+                      onClick={() =>
+                        select(s.latitude, s.longitude, s.id, s.name)
+                      }
+                    >
+                      <span className="site-num">0{i + 1}</span>
+                      <span>
+                        {s.name}
+                        <small>
+                          {coord(s.latitude, "N", "S")} /{" "}
+                          {coord(s.longitude, "E", "W")}
+                        </small>
+                      </span>
+                      <ArrowUpRight size={16} />
+                    </button>
+                  ))}
               </div>
             </section>
+            <div className="explore-bottom">
+              <div>
+                <span className="kicker">READY TO COMPARE?</span>
+                <p>See how different locations change your mission window.</p>
+              </div>
+              <button className="text-link" onClick={examples}>
+                Open example comparison <ArrowUpRight size={18} />
+              </button>
+            </div>
             <div className="source-ribbon">
               <span>BUILT WITH LUNAR DATA</span>
               {sourceLinks}

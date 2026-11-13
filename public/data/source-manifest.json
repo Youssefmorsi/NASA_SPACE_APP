@@ -68,5 +68,11 @@
     "Astronomy Engine outputs",
     "NASA SVS validation table",
     "Surface Data Book study site catalog"
-  ]
+  ],
+  "visualArtwork": {
+    "earth": "Procedural 3D illustration: generated continents, clouds, ocean and atmosphere. Not geographic Earth data.",
+    "sun": "Procedural 3D illustration: animated surface noise, limb shading and corona. Not an observation.",
+    "moonLighting": "View-relative studio lighting for surface inspection; not mission-time solar illumination.",
+    "positionsAndScale": "Compositional, not astronomical scale or ephemeris placement."
+  }
 }
