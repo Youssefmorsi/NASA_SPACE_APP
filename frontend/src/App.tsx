@@ -36,6 +36,10 @@ import {
   type Needs,
 } from "./model";
 import SpaceBackdrop from "./components/SpaceBackdrop";
+import { SkyView } from "./components/SkyView";
+import { PolarMap } from "./components/PolarMap";
+import { ComparisonTracks } from "./components/ComparisonTracks";
+import { linkSchema, readScenarioLink } from "./scenarioLink";
 import "./style.css";
 const MoonGlobe = lazy(() => import("./components/MoonGlobe"));
 const initial: Mission = {
@@ -81,6 +85,10 @@ export default function App() {
     [error, setError] = useState(""),
     [saved, setSaved] = useState<Saved[]>(readSaved),
     [index, setIndex] = useState(0),
+    [playing, setPlaying] = useState(false),
+    [slipHours, setSlipHours] = useState(24),
+    [shareUrl, setShareUrl] = useState(""),
+    [expertMode, setExpertMode] = useState(false),
     [name, setName] = useState("South polar reference"),
     [selectedId, setSelectedId] = useState("south"),
     [search, setSearch] = useState(""),
@@ -98,7 +106,29 @@ export default function App() {
   }, [saved]);
   useEffect(() => {
     window.scrollTo({ top: 0 });
+    setPlaying(false);
   }, [page]);
+  useEffect(() => {
+    const linked = readScenarioLink(window.location.search);
+    if (!linked) return;
+    if (!linked.success) { setError("The shared scenario link is invalid or unsupported."); return; }
+    setForm(linked.data.mission);
+    setNeeds(linked.data.needs);
+    setName(linked.data.name || "Shared location");
+    setSelectedId("custom");
+    setPage("Analyze");
+    setNotice("Shared inputs loaded. Calculate conditions to retrieve or reuse matching Horizons data.");
+  }, []);
+  useEffect(() => {
+    if (!playing || !result) return;
+    const timer = window.setInterval(() => {
+      setIndex((current) => Math.min(current + 1, result.samples.length - 1));
+    }, 500);
+    return () => window.clearInterval(timer);
+  }, [playing, result]);
+  useEffect(() => {
+    if (playing && result && index >= result.samples.length - 1) setPlaying(false);
+  }, [index, playing, result]);
   const change = (key: keyof Mission, value: number | string) =>
     setForm((r) => ({ ...r, [key]: value }));
   const select = (
@@ -145,6 +175,7 @@ export default function App() {
       setResult(data);
       setResultNeeds({ ...needs });
       setIndex(0);
+      setPlaying(false);
       setPage("Analyze");
     } catch (e) {
       setError((e as Error).message);
@@ -247,25 +278,14 @@ export default function App() {
         Skip to content
       </a>
       <header>
-        <button
-          className="brand"
-          onClick={() => setPage("Explore")}
-          aria-label="LunarSight home"
-        >
-          <span className="text-wordmark" aria-hidden="true">
-            <span className="wordmark-top">Lunar</span>
-            <span className="wordmark-bottom">SIGHT</span>
-          </span>
-        </button>
         <nav aria-label="Main navigation">
-          {["Explore", "Analyze", "Compare", "Sources"].map((p, i) => (
+          {["Explore", "Analyze", "Compare", "Sources"].map((p) => (
             <button
               key={p}
               onClick={() => setPage(p)}
               className={page === p ? "active" : ""}
               aria-current={page === p ? "page" : undefined}
             >
-              <span>0{i + 1}</span>
               {p}
               {p === "Compare" && saved.length > 0 && (
                 <small>{saved.length}</small>
@@ -306,7 +326,7 @@ export default function App() {
                   <span className="red-line" /> LUNAR SURFACE EXPLORER
                 </span>
                 <h1>
-                  THE MOON<span>.</span>
+                  FIND A SITE<span>.</span>
                 </h1>
                 <p>
                   Explore the surface. Find your window.
@@ -522,6 +542,7 @@ export default function App() {
                 Open example comparison <ArrowUpRight size={18} />
               </button>
             </div>
+            <div className="page-wrap"><PolarMap latitude={form.latitude} longitude={form.longitude} onSelect={select} /></div>
             <div className="source-ribbon">
               <span>BUILT WITH LUNAR DATA</span>
               {sourceLinks}
@@ -568,6 +589,10 @@ export default function App() {
               title="MISSION CONDITIONS"
               description="Set the window. Test your requirements."
             />
+            <div className="audience-controls" aria-label="Display detail">
+              <button className="secondary" aria-pressed={!expertMode} onClick={() => setExpertMode(false)}>Beginner</button>
+              <button className="secondary" aria-pressed={expertMode} onClick={() => setExpertMode(true)}>Expert</button>
+            </div>
             <div className="analysis-layout">
               <section className="settings panel">
                 <span className="kicker">MISSION PARAMETERS</span>
@@ -580,6 +605,18 @@ export default function App() {
                     onChange={(e) => setName(e.target.value)}
                   />
                 </label>
+                <div className="slip-controls">
+                  <NumberField label="Shift start (hours)" value={slipHours} min={-744} max={744} onChange={setSlipHours} />
+                  <button type="button" className="secondary" onClick={() => {
+                    const shifted = Date.parse(form.startTime) + slipHours * 3600000;
+                    if (!Number.isInteger(slipHours) || Math.abs(slipHours) > 744 || !Number.isFinite(shifted) || shifted < Date.UTC(2000, 0, 1) || shifted >= Date.UTC(2100, 0, 1)) {
+                      setError("Choose a whole-hour shift between −744 and 744 that keeps the start within 2000–2099.");
+                      return;
+                    }
+                    change("startTime", new Date(shifted).toISOString());
+                    setNotice("Start shifted. Calculate conditions to request or reuse matching Horizons data.");
+                  }}>Shift start</button>
+                </div>
                 <div className="field-grid">
                   <NumberField
                     label="Latitude (°N)"
@@ -698,6 +735,16 @@ export default function App() {
                   {busy ? "Retrieving Horizons data…" : "Calculate conditions"}
                   <ArrowRight size={18} />
                 </button>
+                <button className="secondary wide" type="button" onClick={() => {
+                  const parsed = linkSchema.safeParse({ v: 1, name, mission: form, needs });
+                  if (!parsed.success) { setError("Enter valid mission inputs before creating a share link."); return; }
+                  const url = new URL(window.location.href);
+                  url.search = "";
+                  url.hash = "";
+                  url.searchParams.set("scenario", JSON.stringify(parsed.data));
+                  setShareUrl(url.toString());
+                }}>Create scenario link</button>
+                {shareUrl && <label>Copy scenario link<input aria-label="Scenario link" readOnly value={shareUrl} onFocus={e => e.currentTarget.select()} /><small>Contains scenario inputs. The recipient may need to calculate Horizons data.</small></label>}
                 <p className="fine">
                   Actual Horizons data. No substitute calculations on service
                   failure.
@@ -753,6 +800,7 @@ export default function App() {
                         note="Both elevation requirements met"
                       />
                     </div>
+                    <p className="panel plain-summary">This scenario meets {checks(result, resultNeeds).filter(check => check.pass).length} of your 4 chosen requirements. These checks describe sampled geometric conditions; terrain and landing safety are not assessed.</p>
                     <section className="panel chart-panel">
                       <div className="section-head">
                         <div>
@@ -781,6 +829,10 @@ export default function App() {
                           onChange={(e) => setIndex(+e.target.value)}
                         />
                       </label>
+                      <button type="button" className="secondary playback-button" onClick={() => {
+                        if (!playing && index >= result.samples.length - 1) setIndex(0);
+                        setPlaying(!playing);
+                      }}>{playing ? "Pause playback" : "Play samples"}</button>
                       {sample && (
                         <div className="sample-values">
                           <span>
@@ -799,6 +851,7 @@ export default function App() {
                         terrain shadows, obstruction or solar eclipse screening.
                       </p>
                     </section>
+                    <SkyView result={result} index={index} />
                     <section className="panel">
                       <div className="section-head">
                         <h3>Requirement checks</h3>
@@ -822,7 +875,7 @@ export default function App() {
                         suitability: not assessed.
                       </p>
                     </section>
-                    <Provenance result={result} />
+                    {expertMode ? <Provenance result={result} /> : <p className="fine">Choose Expert to inspect source details, exact requests, and raw responses. Sources &amp; methods are also available in the navigation.</p>}
                   </>
                 ) : (
                   <section className="empty-results">
@@ -1055,6 +1108,7 @@ export default function App() {
                         }))}
                         elapsed={align === "elapsed"}
                       />
+                      <ComparisonTracks scenarios={active} elapsed={align === "elapsed"} />
                       {active.map((s) => (
                         <div className="comparison-track" key={s.id}>
                           <h4>{s.name}</h4>
@@ -1443,7 +1497,7 @@ function ElevationChart({
           margin={{ top: 12, right: 15, bottom: 5, left: -18 }}
         >
           <CartesianGrid
-            stroke="#262626"
+            stroke="#38506A"
             strokeDasharray="2 6"
             vertical={false}
           />
@@ -1456,10 +1510,10 @@ function ElevationChart({
                 ? `${t}h`
                 : new Date(t).toISOString().slice(5, 16).replace("T", " ")
             }
-            tick={{ fill: "#939393", fontSize: 10 }}
+            tick={{ fill: "#B8C4CF", fontSize: 10 }}
             minTickGap={60}
           />
-          <YAxis unit="°" tick={{ fill: "#939393", fontSize: 10 }} />
+          <YAxis unit="°" tick={{ fill: "#B8C4CF", fontSize: 10 }} />
           <Tooltip
             labelFormatter={(t) =>
               elapsed
@@ -1468,22 +1522,22 @@ function ElevationChart({
             }
             formatter={(v) => [typeof v === "number" ? v.toFixed(2) + "°" : v]}
             contentStyle={{
-              background: "#161616",
-              border: "1px solid #515151",
-              color: "#ffffff",
+              background: "#1D2B3A",
+              border: "1px solid #71859A",
+              color: "#F2F5F6",
             }}
           />
-          <ReferenceLine y={0} stroke="#656565" />
+          <ReferenceLine y={0} stroke="#71859A" />
           {thresholds && (
             <>
               <ReferenceLine
                 y={results[0].result.request.minimumSunElevation}
-                stroke="#bfbfbf"
+                stroke="#B8C4CF"
                 strokeDasharray="3 4"
               />
               <ReferenceLine
                 y={results[0].result.request.minimumEarthElevation}
-                stroke="#bcbcbc"
+                stroke="#B8C4CF"
                 strokeDasharray="3 4"
               />
             </>
@@ -1494,7 +1548,7 @@ function ElevationChart({
               type="linear"
               dataKey={`sun${i}`}
               name={`${r.name} · Sun`}
-              stroke={i === 0 ? "#c1e8ff" : "#5483b3"}
+              stroke={i === 0 ? "#F2F5F6" : "#71859A"}
               dot={false}
               strokeWidth={2}
               isAnimationActive={false}
@@ -1507,10 +1561,10 @@ function ElevationChart({
               name={`${r.name} · Earth`}
               stroke={
                 results.length === 1
-                  ? "#7da0ca"
+                  ? "#B8C4CF"
                   : i === 0
-                    ? "#c1e8ff"
-                    : "#5483b3"
+                    ? "#F2F5F6"
+                    : "#71859A"
               }
               dot={false}
               strokeWidth={2}

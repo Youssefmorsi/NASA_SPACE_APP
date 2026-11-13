@@ -58,3 +58,11 @@ The Node suite includes 26 legacy tests for the excluded old engine, kept for hi
 React/TypeScript/Vite frontend; lazy Three.js/OrbitControls globe; Recharts; Express backend; Zod request validation. Horizons calls are serialized, timed out at 45 seconds per target, and cached on disk by exact ephemeris parameters. Changing only thresholds reuses raw ephemerides. All active temporal outputs come from Horizons.
 
 The legacy `science/engine.ts`, SVS files and `data/sites.ts` are retained solely for historical tests; the active app does not import them. There is no hosted deployment. Vite reports large Three.js/chart chunks; the globe is lazy-loaded.
+
+## Local planning updates
+
+The Analyze page now offers a sampled azimuth/elevation sky view, estimated next downward threshold crossings, sample playback, a start-time shift control, beginner/expert display choices, and versioned scenario-input links. Links contain inputs only; a recipient must have access to this deployment and may need a Horizons request. Playback stops at the final sample. Threshold crossings are interpolated estimates, not terrain-aware sunset or Earthset.
+
+Explore includes a schematic coordinate map of the south polar region. Compare includes common UTC/elapsed visibility tracks with shaded coverage. Neither represents a terrain elevation model.
+
+Terrain data and frame registration, a sourced candidate-site catalog, manual Horizons web-interface spot checks, and hosted deployment remain outstanding. No terrain-corrected results should be presented until the documented data and validation prerequisites are met.
