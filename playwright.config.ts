@@ -13,7 +13,8 @@ export default defineConfig({
     },
   },
   webServer: {
-    command: "PORT=5180 npm start",
+    command: "npm start",
+    env: { PORT: "5180" },
     url: "http://127.0.0.1:5180/api/health",
     reuseExistingServer: false,
     timeout: 30000,

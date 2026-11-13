@@ -13,7 +13,7 @@ npm run dev
 
 Open http://127.0.0.1:5173. For a production build: `npm run build` then `npm start`.
 
-The standalone project is `/Users/omarabdelazim/Documents/Lunar mission`. The original workspace copy was preserved. An empty file that previously occupied the standalone path was preserved as `Lunar mission.empty-placeholder`.
+The development server listens on `127.0.0.1:5173` by default. Set `PORT` and `HOST` in the environment to change the bind address; keep the default local-only address for local development.
 
 ## Workflow
 
@@ -45,9 +45,9 @@ npm run test:e2e
 python science/verify-horizons.py
 ```
 
-Eight desktop/mobile browser tests cover real selection, failure/fallback, comparison, offline examples and storage.
+The browser suite covers desktop/mobile journeys as well as the polar map, sky view, playback, date shift, scenario links and backup import. Set `PLAYWRIGHT_EXECUTABLE_PATH` to a compatible installed Chromium-based browser if the managed browser is unavailable.
 
-The Node suite includes 26 legacy tests for the excluded old engine, kept for historical regression, and 14 tests of the active API/Horizons pipeline. Legacy NASA SVS checks do **not** validate the new adapter.
+The Node suite includes 26 legacy tests for the excluded old engine, kept for historical regression, alongside tests for the active API/Horizons pipeline and scenario workflows. Legacy NASA SVS checks do **not** validate the new adapter.
 
 `verify-horizons.py` checks 18 directions at three locations and three timestamps through independently formatted fixed-width/TLIST Horizons queries against the app’s CSV/range outputs. This checks query/parse consistency, not an independent ephemeris accuracy bound or a manual web-interface inspection.
 
@@ -57,7 +57,18 @@ The Node suite includes 26 legacy tests for the excluded old engine, kept for hi
 
 React/TypeScript/Vite frontend; lazy Three.js/OrbitControls globe; Recharts; Express backend; Zod request validation. Horizons calls are serialized, timed out at 45 seconds per target, and cached on disk by exact ephemeris parameters. Changing only thresholds reuses raw ephemerides. All active temporal outputs come from Horizons.
 
-The legacy `science/engine.ts`, SVS files and `data/sites.ts` are retained solely for historical tests; the active app does not import them. There is no hosted deployment. Vite reports large Three.js/chart chunks; the globe is lazy-loaded.
+The legacy `science/engine.ts`, SVS files and `data/sites.ts` are retained solely for historical tests; the active app does not import them. There is no hosted deployment. The chart and globe load separately; Vite still warns about the Three.js chunk.
+
+## Container setup
+
+When Docker's Linux engine is running, build and start the application with:
+
+```sh
+docker build -t lunarsight .
+docker run --rm -p 3000:3000 lunarsight
+```
+
+The container listens on port 3000. Its writable cache is ephemeral unless a persistent data volume is configured; preserve the supplied cached examples when setting up persistence. This container setup has not been verified on the current machine because its Docker engine was unavailable.
 
 ## Local planning updates
 

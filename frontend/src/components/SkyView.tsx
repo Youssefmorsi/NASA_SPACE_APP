@@ -43,6 +43,6 @@ export function SkyView({ result, index }: Props) {
       <circle cx={earth.x} cy={earth.y} r="6" fill="#71859A" /><text x={earth.x + 8} y={earth.y + 14} fill="#71859A" fontSize="11">Earth</text>
     </svg>
     <div className="crossing-list"><p><strong>Sun threshold crossing</strong><br />{nextDownCrossing(result, index, "sun")}</p><p><strong>Earth threshold crossing</strong><br />{nextDownCrossing(result, index, "earth")}</p></div>
-    <p className="fine">Crossings are linearly estimated between samples; timing is limited by the sample interval. These are threshold crossings, not terrain-aware sunset or Earthset.</p>
+    <p className="fine">Crossings are linearly estimated between samples; timing is limited by the sample interval. Short events between samples can be missed. Use a finer interval and recalculate to check sensitivity. These are threshold crossings, not terrain-aware sunset or Earthset.</p>
   </section>;
 }

@@ -33,6 +33,10 @@ export const missionSchema = z
   .refine(
     (r) => (r.durationHours * 60) / r.stepMinutes <= 1500,
     "Maximum 1500 intervals",
+  )
+  .refine(
+    (r) => Date.parse(r.startTime) + r.durationHours * 36e5 < Date.UTC(2100, 0, 1),
+    "Mission end must be within 2000–2099",
   );
 export type Mission = z.infer<typeof missionSchema>;
 export function parameters(r: Mission, target: "10" | "399", csv = true) {
@@ -163,15 +167,51 @@ export function summarize(r: Mission, samples: Sample[]) {
   };
 }
 let queue = Promise.resolve();
+let pendingRequests = 0;
+const MAX_PENDING_REQUESTS = 12;
+const MAX_QUEUE_WAIT_MS = 60_000;
+function busyError() {
+  return Object.assign(new Error("Horizons is busy. Please try again shortly or load a cached example."), { status: 503 });
+}
 export function serialized<T>(fn: () => Promise<T>): Promise<T> {
-  const p = queue.then(fn);
+  if (pendingRequests >= MAX_PENDING_REQUESTS) {
+    return Promise.reject(busyError());
+  }
+  pendingRequests++;
+  let expired = false;
+  let timer: ReturnType<typeof setTimeout>;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => { expired = true; reject(busyError()); }, MAX_QUEUE_WAIT_MS);
+  });
+  const p = queue.then(() => {
+    clearTimeout(timer);
+    if (expired) throw busyError();
+    return fn();
+  });
   queue = p.then(
-    () => {},
-    () => {},
+    () => { pendingRequests--; },
+    () => { pendingRequests--; },
   );
-  return p;
+  return Promise.race([p, timeout]).finally(() => clearTimeout(timer));
 }
 const cacheDir = "data/horizons-cache";
+type HorizonsRecord = { sun: string; earth: string; retrievedAt: string; signature: unknown };
+
+function recordSamples(value: unknown, request: Mission): { record: HorizonsRecord; samples: Sample[] } {
+  if (!value || typeof value !== "object") throw Error("Invalid cached Horizons record");
+  const record = value as HorizonsRecord;
+  if (typeof record.sun !== "string" || typeof record.earth !== "string" || typeof record.retrievedAt !== "string" || !Number.isFinite(Date.parse(record.retrievedAt)))
+    throw Error("Invalid cached Horizons record");
+  const sun = parseTable(record.sun), earth = parseTable(record.earth);
+  if (sun.length !== earth.length || sun.length !== (request.durationHours * 60) / request.stepMinutes + 1)
+    throw Error("Incomplete ephemeris coverage");
+  const samples: Sample[] = sun.map((s, i) => {
+    if (s.time !== earth[i].time || Date.parse(s.time) !== Date.parse(request.startTime) + i * request.stepMinutes * 60000)
+      throw Error("Mismatched ephemeris timestamps");
+    return { time: s.time, sun: { azimuth: s.azimuth, elevation: s.elevation }, earth: { azimuth: earth[i].azimuth, elevation: earth[i].elevation } };
+  });
+  return { record, samples };
+}
 export async function analyzeHorizons(input: unknown) {
   const request = missionSchema.parse(input);
   const sunParams = parameters(request, "10"),
@@ -180,20 +220,14 @@ export async function analyzeHorizons(input: unknown) {
     .update(JSON.stringify([sunParams, earthParams]))
     .digest("hex");
   const file = `${cacheDir}/${key}.json`;
-  let record: {
-    sun: string;
-    earth: string;
-    retrievedAt: string;
-    signature: unknown;
-  };
-  let cached = false;
+  let result: { record: HorizonsRecord; samples: Sample[]; cached: boolean };
+  const readCached = async () => recordSamples(JSON.parse(await readFile(file, "utf8")), request);
   try {
-    record = JSON.parse(await readFile(file, "utf8"));
-    cached = true;
+    result = { ...await readCached(), cached: true };
   } catch {
-    record = await serialized(async () => {
+    result = await serialized(async () => {
       try {
-        return JSON.parse(await readFile(file, "utf8"));
+        return { ...await readCached(), cached: true };
       } catch {}
       const fetchOne = async (p: Record<string, string>) => {
         const url =
@@ -213,37 +247,19 @@ export async function analyzeHorizons(input: unknown) {
       };
       const sun = await fetchOne(sunParams),
         earth = await fetchOne(earthParams);
-      const result = {
+      const record = {
         sun: sun.result,
         earth: earth.result,
         retrievedAt: new Date().toISOString(),
         signature: sun.signature,
       };
+      const validated = recordSamples(record, request);
       await mkdir(cacheDir, { recursive: true });
-      await writeFile(file, JSON.stringify(result, null, 2));
-      return result;
+      await writeFile(file, JSON.stringify(record, null, 2));
+      return { ...validated, cached: false };
     });
   }
-  const sun = parseTable(record.sun),
-    earth = parseTable(record.earth);
-  if (
-    sun.length !== earth.length ||
-    sun.length !== (request.durationHours * 60) / request.stepMinutes + 1
-  )
-    throw Error("Incomplete ephemeris coverage");
-  const samples: Sample[] = sun.map((s, i) => {
-    if (
-      s.time !== earth[i].time ||
-      Date.parse(s.time) !==
-        Date.parse(request.startTime) + i * request.stepMinutes * 60000
-    )
-      throw Error("Mismatched ephemeris timestamps");
-    return {
-      time: s.time,
-      sun: { azimuth: s.azimuth, elevation: s.elevation },
-      earth: { azimuth: earth[i].azimuth, elevation: earth[i].elevation },
-    };
-  });
+  const { record, samples, cached } = result;
   return {
     request,
     samples,

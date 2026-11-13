@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node --import tsx backend/server.ts",
     "build": "tsc --noEmit && vite build",
-    "start": "NODE_ENV=production node --import tsx backend/server.ts",
+    "start": "node --import tsx backend/start.ts",
     "test": "node --import tsx --test tests/*.test.ts",
     "validate:science": "node --import tsx science/validate.ts",
     "test:e2e": "playwright test",

@@ -6,6 +6,18 @@ export type Needs = {
   overlap: number;
 };
 export type Saved = { id: string; name: string; result: Result; needs: Needs };
+export function mergeExampleScenarios(saved: Saved[], incoming: Saved[]) {
+  const all = [...saved];
+  const selected = incoming.map((example) => {
+    const existing = all.find((item) => item.id === example.id ||
+      (item.name === example.name && JSON.stringify(item.result.request) === JSON.stringify(example.result.request)));
+    if (existing) return existing.id;
+    all.push(example);
+    return example.id;
+  });
+  if (all.length > 8) throw Error("Make room for the cached examples before loading them.");
+  return { all, selected: selected.slice(0, 2) };
+}
 export const defaultNeeds: Needs = {
   sun: 50,
   earth: 50,

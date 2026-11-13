@@ -136,14 +136,18 @@ app.use(
     const validation = err instanceof ZodError;
     const tooLarge =
       !!err && typeof err === "object" && "status" in err && err.status === 413;
+    const busy =
+      !!err && typeof err === "object" && "status" in err && err.status === 503;
     res
       .status(
-        tooLarge ? 413 : validation || err instanceof SyntaxError ? 400 : 502,
+        tooLarge ? 413 : busy ? 503 : validation || err instanceof SyntaxError ? 400 : 502,
       )
       .json({
         error: {
           code: tooLarge
             ? "REQUEST_TOO_LARGE"
+            : busy
+              ? "SERVICE_BUSY"
             : validation
               ? "VALIDATION_ERROR"
               : "SERVICE_ERROR",

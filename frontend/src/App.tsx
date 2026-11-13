@@ -14,16 +14,6 @@ import {
   LocateFixed,
   Layers,
 } from "lucide-react";
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ReferenceLine,
-} from "recharts";
 import type { Mission, Result } from "../../science/horizons";
 import { catalog } from "../../data/catalog";
 import {
@@ -31,6 +21,7 @@ import {
   csv,
   defaultNeeds,
   explanation,
+  mergeExampleScenarios,
   validSaved,
   type Saved,
   type Needs,
@@ -43,7 +34,9 @@ import { linkSchema, readScenarioLink } from "./scenarioLink";
 
 import SurfaceExplorer from "./components/SurfaceExplorer";
 import SolarDiskPanel from "./components/SolarDiskPanel";
+import { parseBackup, serializeBackup } from "./scenarioBackup";
 import "./style.css";
+const ElevationChart = lazy(() => import("./components/ElevationChart"));
 const MoonGlobe = lazy(() => import("./components/MoonGlobe"));
 const initial: Mission = {
   latitude: -89,
@@ -91,6 +84,7 @@ export default function App() {
     [playing, setPlaying] = useState(false),
     [slipHours, setSlipHours] = useState(24),
     [shareUrl, setShareUrl] = useState(""),
+    [shareFingerprint, setShareFingerprint] = useState(""),
     [expertMode, setExpertMode] = useState(false),
     [name, setName] = useState("South polar reference"),
     [selectedId, setSelectedId] = useState("south"),
@@ -230,27 +224,9 @@ export default function App() {
         }))
         .filter(validSaved);
       if (!incoming.length) throw Error("No verified examples available");
-      const extra = incoming.filter(
-        (s: Saved) =>
-          !saved.some(
-            (x) =>
-              x.name === s.name &&
-              JSON.stringify(x.result.request) ===
-                JSON.stringify(s.result.request),
-          ),
-      );
-      if (saved.length + extra.length > 8)
-        throw Error(
-          "Make room for the three cached examples before loading them.",
-        );
-      const all = [...saved, ...extra];
+      const { all, selected } = mergeExampleScenarios(saved, incoming);
       setSaved(all);
-      setChoice(
-        all
-          .slice(-incoming.length)
-          .slice(0, 2)
-          .map((s: Saved) => s.id),
-      );
+      setChoice(selected);
       setPage("Compare");
       setNotice(
         "Genuine cached Horizons outputs · 13–20 November 2026 · 60-minute samples.",
@@ -819,49 +795,17 @@ export default function App() {
                   {busy ? "Retrieving Horizons data…" : "Calculate conditions"}
                   <ArrowRight size={18} />
                 </button>
-                <button
-                  className="secondary wide"
-                  type="button"
-                  onClick={() => {
-                    const parsed = linkSchema.safeParse({
-                      v: 1,
-                      name,
-                      mission: form,
-                      needs,
-                    });
-                    if (!parsed.success) {
-                      setError(
-                        "Enter valid mission inputs before creating a share link.",
-                      );
-                      return;
-                    }
-                    const url = new URL(window.location.href);
-                    url.search = "";
-                    url.hash = "";
-                    url.searchParams.set(
-                      "scenario",
-                      JSON.stringify(parsed.data),
-                    );
-                    setShareUrl(url.toString());
-                  }}
-                >
-                  Create scenario link
-                </button>
-                {shareUrl && (
-                  <label>
-                    Copy scenario link
-                    <input
-                      aria-label="Scenario link"
-                      readOnly
-                      value={shareUrl}
-                      onFocus={(e) => e.currentTarget.select()}
-                    />
-                    <small>
-                      Contains scenario inputs. The recipient may need to
-                      calculate Horizons data.
-                    </small>
-                  </label>
-                )}
+                <button className="secondary wide" type="button" onClick={() => {
+                  const parsed = linkSchema.safeParse({ v: 1, name, mission: form, needs });
+                  if (!parsed.success) { setError("Enter valid mission inputs before creating a share link."); return; }
+                  const url = new URL(window.location.href);
+                  url.search = "";
+                  url.hash = "";
+                  url.searchParams.set("scenario", JSON.stringify(parsed.data));
+                  setShareUrl(url.toString());
+                  setShareFingerprint(JSON.stringify({ name, mission: form, needs }));
+                }}>Create scenario link</button>
+                {shareUrl && shareFingerprint === JSON.stringify({ name, mission: form, needs }) && <label>Copy scenario link<input aria-label="Scenario link" readOnly value={shareUrl} onFocus={e => e.currentTarget.select()} /><small>Contains scenario inputs. The recipient may need to calculate Horizons data.</small></label>}
                 <p className="fine">
                   Actual Horizons data. No substitute calculations on service
                   failure.
@@ -940,10 +884,9 @@ export default function App() {
                           Earth
                         </span>
                       </div>
-                      <ElevationChart
-                        results={[{ name: "Sun", result }]}
-                        thresholds
-                      />
+                      <Suspense fallback={<div className="loading">Loading chart…</div>}>
+                        <ElevationChart results={[{ name: "Sun", result }]} thresholds />
+                      </Suspense>
                       <Tracks result={result} />
                       <label className="scrub-label">
                         Inspect time{" "}
@@ -1074,6 +1017,25 @@ export default function App() {
                 >
                   <Download size={16} /> Export CSV
                 </button>
+                <button className="secondary" disabled={!saved.length} onClick={() => download(serializeBackup(saved), "lunarsight-scenarios.json", "application/json")}>
+                  <Download size={16} /> Export scenario backup
+                </button>
+                <label className="backup-import">Import scenario backup
+                  <input aria-label="Import scenario backup" type="file" accept="application/json,.json" onChange={async (e) => {
+                    const file = e.currentTarget.files?.[0];
+                    e.currentTarget.value = "";
+                    if (!file) return;
+                    try {
+                      if (file.size > 8 * 1024 * 1024) throw Error("Scenario backup exceeds the 8 MB limit.");
+                      const imported = parseBackup(await file.text());
+                      if (saved.length + imported.length > 8) throw Error("Remove saved scenarios to make room for this backup.");
+                      const restored = imported.map(s => ({ ...s, id: crypto.randomUUID() }));
+                      setSaved(existing => [...existing, ...restored]);
+                      setError("");
+                      setNotice(`Imported ${restored.length} scenario(s). Imported data has not been independently verified.`);
+                    } catch (err) { setError(err instanceof Error ? err.message : "Unable to import the scenario backup."); }
+                  }} />
+                </label>
               </div>
             </div>
             {saved.length ? (
@@ -1128,6 +1090,9 @@ export default function App() {
                         {timestamp(s.result.request.startTime)} ·{" "}
                         {s.result.request.durationHours} h
                       </p>
+                      {s.result.provenance.mode === "Imported backup (unverified)" && (
+                        <p className="fine">Imported backup (unverified)</p>
+                      )}
                       <div className="card-actions">
                         <button
                           className="text-link"
@@ -1241,17 +1206,13 @@ export default function App() {
                           </select>
                         </label>
                       </div>
-                      <ElevationChart
-                        results={active.map((s) => ({
-                          name: s.name,
-                          result: s.result,
-                        }))}
-                        elapsed={align === "elapsed"}
-                      />
-                      <ComparisonTracks
-                        scenarios={active}
-                        elapsed={align === "elapsed"}
-                      />
+                      <Suspense fallback={<div className="loading">Loading chart…</div>}>
+                        <ElevationChart
+                          results={active.map((s) => ({ name: s.name, result: s.result }))}
+                          elapsed={align === "elapsed"}
+                        />
+                      </Suspense>
+                      <ComparisonTracks scenarios={active} elapsed={align === "elapsed"} />
                       {active.map((s) => (
                         <div className="comparison-track" key={s.id}>
                           <h4>{s.name}</h4>
@@ -1575,147 +1536,6 @@ function Tracks({ result }: { result: Result }) {
           <small>{f(result.summary[key].percent)}%</small>
         </div>
       ))}
-    </div>
-  );
-}
-function ElevationChart({
-  results,
-  elapsed = false,
-  thresholds = false,
-}: {
-  results: { name: string; result: Result }[];
-  elapsed?: boolean;
-  thresholds?: boolean;
-}) {
-  const times = [
-    ...new Set(
-      results.flatMap(({ result: r }) =>
-        r.samples.map((s) =>
-          elapsed
-            ? (Date.parse(s.time) - Date.parse(r.request.startTime)) / 36e5
-            : Date.parse(s.time),
-        ),
-      ),
-    ),
-  ].sort((a, b) => a - b);
-  function at(r: Result, t: number, key: "sun" | "earth") {
-    const target = elapsed ? Date.parse(r.request.startTime) + t * 36e5 : t;
-    const xs = r.samples;
-    if (target < Date.parse(xs[0].time) || target > Date.parse(xs.at(-1)!.time))
-      return null;
-    const i = Math.min(
-      xs.length - 1,
-      Math.floor(
-        (target - Date.parse(xs[0].time)) / (r.request.stepMinutes * 60000),
-      ),
-    );
-    if (i === xs.length - 1) return xs[i][key].elevation;
-    const frac =
-      (target - Date.parse(xs[i].time)) /
-      (Date.parse(xs[i + 1].time) - Date.parse(xs[i].time));
-    return (
-      xs[i][key].elevation +
-      (xs[i + 1][key].elevation - xs[i][key].elevation) * frac
-    );
-  }
-  const data = times.map((t) => {
-    const row: Record<string, number | null> = { time: t };
-    results.forEach(({ result: r }, i) => {
-      row[`sun${i}`] = at(r, t, "sun");
-      row[`earth${i}`] = at(r, t, "earth");
-    });
-    return row;
-  });
-  return (
-    <div
-      className="elevation-chart"
-      role="img"
-      aria-label="Sun and Earth elevation over mission time"
-    >
-      <ResponsiveContainer width="100%" height={260}>
-        <LineChart
-          data={data}
-          margin={{ top: 12, right: 15, bottom: 5, left: -18 }}
-        >
-          <CartesianGrid
-            stroke="#38506A"
-            strokeDasharray="2 6"
-            vertical={false}
-          />
-          <XAxis
-            dataKey="time"
-            type="number"
-            domain={["dataMin", "dataMax"]}
-            tickFormatter={(t) =>
-              elapsed
-                ? `${t}h`
-                : new Date(t).toISOString().slice(5, 16).replace("T", " ")
-            }
-            tick={{ fill: "#B8C4CF", fontSize: 10 }}
-            minTickGap={60}
-          />
-          <YAxis unit="°" tick={{ fill: "#B8C4CF", fontSize: 10 }} />
-          <Tooltip
-            labelFormatter={(t) =>
-              elapsed
-                ? `${t} mission hours`
-                : timestamp(new Date(Number(t)).toISOString())
-            }
-            formatter={(v) => [typeof v === "number" ? v.toFixed(2) + "°" : v]}
-            contentStyle={{
-              background: "#1D2B3A",
-              border: "1px solid #71859A",
-              color: "#F2F5F6",
-            }}
-          />
-          <ReferenceLine y={0} stroke="#71859A" />
-          {thresholds && (
-            <>
-              <ReferenceLine
-                y={results[0].result.request.minimumSunElevation}
-                stroke="#B8C4CF"
-                strokeDasharray="3 4"
-              />
-              <ReferenceLine
-                y={results[0].result.request.minimumEarthElevation}
-                stroke="#B8C4CF"
-                strokeDasharray="3 4"
-              />
-            </>
-          )}
-          {results.flatMap((r, i) => [
-            <Line
-              key={`s${i}`}
-              type="linear"
-              dataKey={`sun${i}`}
-              name={`${r.name} · Sun`}
-              stroke={i === 0 ? "#F2F5F6" : "#71859A"}
-              dot={false}
-              strokeWidth={2}
-              isAnimationActive={false}
-              connectNulls={false}
-            />,
-            <Line
-              key={`e${i}`}
-              type="linear"
-              dataKey={`earth${i}`}
-              name={`${r.name} · Earth`}
-              stroke={
-                results.length === 1
-                  ? "#B8C4CF"
-                  : i === 0
-                    ? "#F2F5F6"
-                    : "#71859A"
-              }
-              dot={false}
-              strokeWidth={2}
-              strokeDasharray="5 4"
-              isAnimationActive={false}
-              connectNulls={false}
-            />,
-          ])}
-        </LineChart>
-      </ResponsiveContainer>
     </div>
   );
 }
