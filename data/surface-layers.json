@@ -1,0 +1,193 @@
+[
+  {
+    "id": "wac",
+    "product": "LRO_WAC_Mosaic_Global_303ppd_v02",
+    "title": "LRO WAC Mosaic v2",
+    "description": "This is a preliminary global mosaic of the Wide Angle Camera (WAC) of the Lunar Reconnaissance Orbiter Camera (LROC). The WAC global mosaic is comprised of over 15,000 images acquired between November 2009 and February 2011. The WAC maps the whole Moon in one month, however the solar incidence angle at the equator changes about 28 deg from the beginning to the end of the month. This version corrects the polar illumination differences seen in previous mosaics.",
+    "bbox": [
+      -180.0,
+      -90.0,
+      180.0,
+      90.0
+    ],
+    "maxZoom": 8,
+    "extension": "jpg",
+    "source": "https://trek.nasa.gov/tiles/Moon/EQ/LRO_WAC_Mosaic_Global_303ppd_v02/1.0.0/WMTSCapabilities.xml",
+    "metadata": {
+      "item_DBID": "290676",
+      "item_UUID": "f0d436fb-c2a8-4c33-ba1c-afdf55bbd688",
+      "productLabel": "LRO_WAC_Mosaic_Global_303ppd_v02",
+      "title": "LRO WAC Mosaic v2",
+      "fileSize": [
+        4438885897
+      ],
+      "productCat1": "Imagery",
+      "productCat2": "Mosaic",
+      "mission": "Lunar Reconnaissance Orbiter",
+      "trekProjection": "urn:ogc:def:crs:EPSG::104903",
+      "projection": "GEOGCS[\"GCS_Moon\",DATUM[\"Moon\",SPHEROID[\"Moon\",1737400,0]],PRIMEM[\"Reference_Meridian\",0],UNIT[\"degree\",0.0174532925199433]]",
+      "data_created_date": "2026-11-06T22:36:11Z",
+      "description": "This is a preliminary global mosaic of the Wide Angle Camera (WAC) of the Lunar Reconnaissance Orbiter Camera (LROC). The WAC global mosaic is comprised of over 15,000 images acquired between November 2009 and February 2011. The WAC maps the whole Moon in one month, however the solar incidence angle at the equator changes about 28 deg from the beginning to the end of the month. This version corrects the polar illumination differences seen in previous mosaics.",
+      "itemType": "product",
+      "resolution": 0.0,
+      "thumbnailURLDir": "https://trek.nasa.gov/tiles/Moon/EQ/LRO_WAC_Mosaic_Global_303ppd_v02/thumbnail/LRO_WAC_Mosaic_Global_303ppd_v02-",
+      "isContainer": false,
+      "searchable": true,
+      "coverage": "Global",
+      "serviceTypes": [
+        "Mosaic",
+        "raster"
+      ],
+      "shape": "POLYGON ((-180 90,-180.0 -89.99997378,179.99994756 -89.99997378,179.99994756 90.0,-180 90))",
+      "bbox": "-180,-90,180,90",
+      "RASTER_TYPE": "grayscale",
+      "PIXEL_DEPTH": "Byte",
+      "BANDS": 1,
+      "instrument": "Wide Angle Camera",
+      "_version_": 1881150137343934464
+    }
+  },
+  {
+    "id": "hillshade",
+    "product": "LRO_LOLA_Shade_Global_128ppd_v04",
+    "title": "LRO LOLA DEM, Hillshade",
+    "description": "This is version 4 of the LRO LOLA DEM Hillshade. This is a shaded-relief of the original LOLA Digital Elevation Model (DEM). The DEM is a shape map (radius) of the Moon at a resolution of 128 pixels per degree, based on altimetry data acquired through September 2011 by the LOLA instrument. The ground tracks were interpolated using the Generic Mapping Tools programs &quot;surface&quot; and &quot;grdblend&quot;. The map is in the form of a binary table with one row for each 0.007813 degree of latitude, pixel registered. Map values are referred to a radius of 1737400 m.",
+    "bbox": [
+      -180.0,
+      -90.0,
+      180.0,
+      90.0
+    ],
+    "maxZoom": 5,
+    "extension": "png",
+    "source": "https://trek.nasa.gov/tiles/Moon/EQ/LRO_LOLA_Shade_Global_128ppd_v04/1.0.0/WMTSCapabilities.xml",
+    "metadata": {
+      "item_DBID": "289244",
+      "item_UUID": "19c5aad4-393c-4060-9848-e2f730ba5670",
+      "productLabel": "LRO_LOLA_Shade_Global_128ppd_v04",
+      "title": "LRO LOLA DEM, Hillshade",
+      "fileSize": [
+        963419743
+      ],
+      "productCat1": "Topography",
+      "productCat2": "Hillshade",
+      "mission": "Lunar Reconnaissance Orbiter",
+      "trekProjection": "urn:ogc:def:crs:EPSG::104903",
+      "projection": "GEOGCS[\"GCS_Moon_2000\",DATUM[\"Moon_2000\",SPHEROID[\"Moon_2000_IAU_IAG\",1737400,0]],PRIMEM[\"Reference_Meridian\",0],UNIT[\"degree\",0.0174532925199433]]",
+      "data_created_date": "2026-11-06T22:28:48Z",
+      "description": "This is version 4 of the LRO LOLA DEM Hillshade. This is a shaded-relief of the original LOLA Digital Elevation Model (DEM). The DEM is a shape map (radius) of the Moon at a resolution of 128 pixels per degree, based on altimetry data acquired through September 2011 by the LOLA instrument. The ground tracks were interpolated using the Generic Mapping Tools programs &quot;surface&quot; and &quot;grdblend&quot;. The map is in the form of a binary table with one row for each 0.007813 degree of latitude, pixel registered. Map values are referred to a radius of 1737400 m.",
+      "itemType": "product",
+      "thumbnailURLDir": "https://trek.nasa.gov/tiles/Moon/EQ/LRO_LOLA_Shade_Global_128ppd_v04/thumbnail/LRO_LOLA_Shade_Global_128ppd_v04-",
+      "isContainer": false,
+      "searchable": true,
+      "coverage": "Global",
+      "serviceTypes": [
+        "Mosaic"
+      ],
+      "shape": "POLYGON ((-180 90,-180 -90,180 -90,180 90,-180 90))",
+      "bbox": "-180,-90,180,90",
+      "resolution": 0.0,
+      "RASTER_TYPE": "grayscale",
+      "PIXEL_DEPTH": "Byte",
+      "BANDS": 1,
+      "instrument": "Laser Altimeter",
+      "_version_": 1881149673152970752
+    }
+  },
+  {
+    "id": "psr",
+    "product": "LRO_LOLA_Illumination_SPole65S_240m_EQ",
+    "title": "LOLA Permanently Shadowed Regions Southpole 240m",
+    "description": "This data product is a map of the permanently shadowed regions (PSRs) in the lunar South Pole. The map resolution is 240m/pix by 240m/pix, true at the pole in polar stereographic (spherical) projection. The calculations are based on the LOLA elevation map LDEM_75S_240M and are described in. The values are binary, indicating whether a pixel is in permanent shadow (1) or not (0, NoDATA).",
+    "bbox": [
+      -180.0,
+      -90.0,
+      180.0,
+      -55.1725789
+    ],
+    "maxZoom": 5,
+    "extension": "png",
+    "source": "https://trek.nasa.gov/tiles/Moon/EQ/LRO_LOLA_Illumination_SPole65S_240m_EQ/1.0.0/WMTSCapabilities.xml",
+    "metadata": {
+      "item_DBID": "291248",
+      "item_UUID": "f0cd5e0d-8c5a-458f-9ed3-013ec6452ae1",
+      "productLabel": "LRO_LOLA_Illumination_SPole65S_240m_EQ",
+      "title": "LOLA Permanently Shadowed Regions Southpole 240m",
+      "fileSize": [
+        42488650
+      ],
+      "productCat1": "Illumination",
+      "productCat2": "Permanently Shadowed",
+      "mission": "Lunar Reconnaissance Orbiter",
+      "trekProjection": "urn:ogc:def:crs:EPSG::104903",
+      "projection": "GEOGCS[\"GCS_Moon\",DATUM[\"Moon\",SPHEROID[\"Moon\",1737400,0]],PRIMEM[\"Reference_Meridian\",0],UNIT[\"degree\",0.0174532925199433]]",
+      "data_created_date": "2022-04-26T23:46:48Z",
+      "description": "This data product is a map of the permanently shadowed regions (PSRs) in the lunar South Pole. The map resolution is 240m/pix by 240m/pix, true at the pole in polar stereographic (spherical) projection. The calculations are based on the LOLA elevation map LDEM_75S_240M and are described in. The values are binary, indicating whether a pixel is in permanent shadow (1) or not (0, NoDATA).",
+      "itemType": "product",
+      "resolution": 0.017441,
+      "thumbnailURLDir": "https://trek.nasa.gov/tiles/Moon/EQ/LRO_LOLA_Illumination_SPole65S_240m_EQ/thumbnail/LRO_LOLA_Illumination_SPole65S_240m_EQ-",
+      "isContainer": false,
+      "searchable": true,
+      "coverage": "Regional",
+      "serviceTypes": [
+        "Mosaic"
+      ],
+      "shape": "POLYGON((-180 -55.1725789,-180 -90,180 -90,180 -55.1725789,-180 -55.1725789))",
+      "trekBbox": "-180,-90,180,-55.1725789",
+      "bbox": "-180,-90,180,-55.1725789",
+      "RASTER_TYPE": "grayscale",
+      "PIXEL_DEPTH": "Byte",
+      "BANDS": 1,
+      "instrument": "Laser Altimeter",
+      "_version_": 1731216600673026048
+    }
+  },
+  {
+    "id": "slope",
+    "product": "LRO_LOLA_ClrSlope_SPole75S_120m_EQ",
+    "title": "LOLA Slope Southpole 120m, Colorized",
+    "description": "This is a colorized map of the original south polar surface slope of the Moon at a resolution of 16 m/pix by 16 m/pix, based on altimetry data acquired by the LOLA instrument. The LOLA Laser 1 and 2 data through mission phase LRO_SM_17 are the source for this data set. The bi-directional slope was calculated from a plane fit to three successive laser shots requiring n=5 to 15 profile returns. Depending on orbital velocity, probability of detection, and spacecraft altitude, the slope baseline may vary from 30 to 120 meters.",
+    "bbox": [
+      -180.0,
+      -89.9951773,
+      179.9992504,
+      -68.9074986
+    ],
+    "maxZoom": 6,
+    "extension": "png",
+    "source": "https://trek.nasa.gov/tiles/Moon/EQ/LRO_LOLA_ClrSlope_SPole75S_120m_EQ/1.0.0/WMTSCapabilities.xml",
+    "metadata": {
+      "item_DBID": "291246",
+      "item_UUID": "96b1eaf8-944d-4cbe-8ff5-ad9df2c8c206",
+      "productLabel": "LRO_LOLA_ClrSlope_SPole75S_120m_EQ",
+      "title": "LOLA Slope Southpole 120m, Colorized",
+      "fileSize": [
+        182138398
+      ],
+      "productCat1": "Terrain",
+      "productCat2": "Slope Colorized",
+      "mission": "Lunar Reconnaissance Orbiter",
+      "trekProjection": "urn:ogc:def:crs:EPSG::104903",
+      "projection": "GEOGCS[\"GCS_Moon\",DATUM[\"Moon\",SPHEROID[\"Moon\",1737400,0]],PRIMEM[\"Reference_Meridian\",0],UNIT[\"degree\",0.0174532925199433]]",
+      "data_created_date": "2022-04-26T23:46:47Z",
+      "description": "This is a colorized map of the original south polar surface slope of the Moon at a resolution of 16 m/pix by 16 m/pix, based on altimetry data acquired by the LOLA instrument. The LOLA Laser 1 and 2 data through mission phase LRO_SM_17 are the source for this data set. The bi-directional slope was calculated from a plane fit to three successive laser shots requiring n=5 to 15 profile returns. Depending on orbital velocity, probability of detection, and spacecraft altitude, the slope baseline may vary from 30 to 120 meters.",
+      "itemType": "product",
+      "resolution": 0.01143,
+      "thumbnailURLDir": "https://trek.nasa.gov/tiles/Moon/EQ/LRO_LOLA_ClrSlope_SPole75S_120m_EQ/thumbnail/LRO_LOLA_ClrSlope_SPole75S_120m_EQ-",
+      "isContainer": false,
+      "searchable": true,
+      "coverage": "Regional",
+      "serviceTypes": [
+        "Mosaic"
+      ],
+      "shape": "POLYGON((-180 -68.9075,-180 -90,180 -90,180 -68.9075,-180 -68.9075))",
+      "trekBbox": "-180,-89.9951773,179.9992504,-68.9074986",
+      "bbox": "-180,-89.9951773,179.9992504,-68.9074986",
+      "RASTER_TYPE": "rgb",
+      "PIXEL_DEPTH": "Byte",
+      "BANDS": 3,
+      "instrument": "Laser Altimeter",
+      "_version_": 1731216599808999424
+    }
+  }
+]

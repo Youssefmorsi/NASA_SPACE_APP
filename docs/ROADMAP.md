@@ -7,3 +7,5 @@
 - Add verified historical/candidate landing site records from the required resources; current catalog makes no mission assignment claims.
 - Manual Horizons web-UI spot checks remain distinct from executed API-format consistency checks.
 - Power and communication link modelling require spacecraft and network inputs; not implemented.
+
+Implemented subsequently: six historical sites with traceable LROC coordinates, bounded spatial NAC search/footprint selection, regional on-demand Moon Trek layers, and sampled apparent solar-disk screening. Numeric terrain horizon/roughness/slope screening remains pending verified data access and frame/coverage validation. Full power and radio models remain excluded.

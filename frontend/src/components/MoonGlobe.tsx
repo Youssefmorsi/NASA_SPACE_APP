@@ -13,15 +13,20 @@ export default function MoonGlobe({
   latitude,
   longitude,
   onSelect,
+  footprints = [],
 }: {
   latitude: number;
   longitude: number;
   onSelect: (lat: number, lon: number) => void;
+  footprints?: { ring: number[][] }[];
 }) {
   const host = useRef<HTMLDivElement>(null),
     focus = useRef<(lat: number, lon: number) => void>(() => {}),
     callback = useRef(onSelect);
   callback.current = onSelect;
+  const syncFootprints = useRef<(records: { ring: number[][] }[]) => void>(
+    () => {},
+  );
   const [failed, setFailed] = useState(false),
     [loaded, setLoaded] = useState(false),
     [rotating, setRotating] = useState(false);
@@ -94,7 +99,24 @@ export default function MoonGlobe({
       ),
     );
     const footprintMat = new T.LineBasicMaterial({ color: 0xffffff });
-    scene.add(new T.Line(footprintGeo, footprintMat));
+    const footprintGroup = new T.Group();
+    scene.add(footprintGroup);
+    syncFootprints.current = (records) => {
+      for (const child of [...footprintGroup.children]) {
+        (child as T.Line).geometry.dispose();
+        footprintGroup.remove(child);
+      }
+      const rings = records.length
+        ? records.map((r) => r.ring)
+        : [observation.features[0].geometry.coordinates[0]];
+      for (const ring of rings) {
+        const geo = new T.BufferGeometry().setFromPoints(
+          ring.map(([lon, lat]) => point(lat, lon, 1.008)),
+        );
+        footprintGroup.add(new T.Line(geo, footprintMat));
+      }
+    };
+    syncFootprints.current(footprints);
     const pins: T.Mesh[] = [];
     const pinGeo = new T.SphereGeometry(0.008, 12, 8);
     const pinMat = new T.MeshBasicMaterial({ color: 0x999999 });
@@ -212,6 +234,8 @@ export default function MoonGlobe({
       cancelAnimationFrame(frame);
       resize.disconnect();
       controls.dispose();
+      for (const child of footprintGroup.children)
+        (child as T.Line).geometry.dispose();
       footprintGeo.dispose();
       footprintMat.dispose();
       geometry.dispose();
@@ -228,6 +252,9 @@ export default function MoonGlobe({
   useEffect(() => {
     focus.current(latitude, longitude);
   }, [latitude, longitude]);
+  useEffect(() => {
+    syncFootprints.current(footprints);
+  }, [footprints]);
   return (
     <div className="globe-shell">
       <div className="globe-canvas" ref={host} />

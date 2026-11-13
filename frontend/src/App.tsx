@@ -40,6 +40,9 @@ import { SkyView } from "./components/SkyView";
 import { PolarMap } from "./components/PolarMap";
 import { ComparisonTracks } from "./components/ComparisonTracks";
 import { linkSchema, readScenarioLink } from "./scenarioLink";
+
+import SurfaceExplorer from "./components/SurfaceExplorer";
+import SolarDiskPanel from "./components/SolarDiskPanel";
 import "./style.css";
 const MoonGlobe = lazy(() => import("./components/MoonGlobe"));
 const initial: Mission = {
@@ -94,7 +97,9 @@ export default function App() {
     [search, setSearch] = useState(""),
     [notice, setNotice] = useState(""),
     [choice, setChoice] = useState<string[]>([]),
-    [align, setAlign] = useState<"utc" | "elapsed">("utc");
+    [align, setAlign] = useState<"utc" | "elapsed">("utc"),
+    [footprints, setFootprints] = useState<{ ring: number[][] }[]>([]),
+    [siteKind, setSiteKind] = useState("all");
   useEffect(() => {
     try {
       localStorage.setItem("lunarsight-horizons-v3", JSON.stringify(saved));
@@ -111,13 +116,18 @@ export default function App() {
   useEffect(() => {
     const linked = readScenarioLink(window.location.search);
     if (!linked) return;
-    if (!linked.success) { setError("The shared scenario link is invalid or unsupported."); return; }
+    if (!linked.success) {
+      setError("The shared scenario link is invalid or unsupported.");
+      return;
+    }
     setForm(linked.data.mission);
     setNeeds(linked.data.needs);
     setName(linked.data.name || "Shared location");
     setSelectedId("custom");
     setPage("Analyze");
-    setNotice("Shared inputs loaded. Calculate conditions to retrieve or reuse matching Horizons data.");
+    setNotice(
+      "Shared inputs loaded. Calculate conditions to retrieve or reuse matching Horizons data.",
+    );
   }, []);
   useEffect(() => {
     if (!playing || !result) return;
@@ -127,7 +137,8 @@ export default function App() {
     return () => window.clearInterval(timer);
   }, [playing, result]);
   useEffect(() => {
-    if (playing && result && index >= result.samples.length - 1) setPlaying(false);
+    if (playing && result && index >= result.samples.length - 1)
+      setPlaying(false);
   }, [index, playing, result]);
   const change = (key: keyof Mission, value: number | string) =>
     setForm((r) => ({ ...r, [key]: value }));
@@ -326,7 +337,9 @@ export default function App() {
                   <span className="red-line" /> LUNAR SURFACE EXPLORER
                 </span>
                 <h1>
-                  BEYOND THE<br />HORIZON<span>.</span>
+                  BEYOND THE
+                  <br />
+                  HORIZON<span>.</span>
                 </h1>
                 <p>
                   Explore the surface. Find your window.
@@ -386,6 +399,7 @@ export default function App() {
                   <MoonGlobe
                     latitude={form.latitude}
                     longitude={form.longitude}
+                    footprints={footprints}
                     onSelect={(lat, lon) => select(lat, lon)}
                   />
                 </Suspense>
@@ -402,7 +416,7 @@ export default function App() {
               aria-label="Location and mission time"
             >
               <div className="planner-heading">
-                <span className="kicker">01 / MISSION SETUP</span>
+                <span className="kicker">MISSION SETUP</span>
                 <h2>A place. A time. A plan.</h2>
                 <p>
                   Choose your location and start time, then review the
@@ -423,6 +437,16 @@ export default function App() {
                   {selected?.description ||
                     "User-selected coordinates. Terrain and landing suitability have not been assessed."}
                 </p>
+                {selected?.source && (
+                  <a
+                    className="text-link"
+                    href={selected.source}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Verified coordinate source <ArrowUpRight size={14} />
+                  </a>
+                )}
                 {selectedId === "lroc-observation" && (
                   <a
                     className="observation-link text-link"
@@ -499,20 +523,39 @@ export default function App() {
               </div>
               <div className="site-list">
                 <div className="list-header">
-                  <span className="kicker">REFERENCE POINTS</span>
-                  <span>{String(catalog.length).padStart(2, "0")}</span>
+                  <span className="kicker">LOCATION CATALOG</span>
                 </div>
                 <input
                   aria-label="Search locations"
-                  placeholder="Find a reference point…"
+                  placeholder="Find a location…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
+                <label className="catalog-filter">
+                  Location category
+                  <select
+                    value={siteKind}
+                    onChange={(e) => setSiteKind(e.target.value)}
+                  >
+                    <option value="all">All locations</option>
+                    <option value="historical">
+                      Verified historical landings
+                    </option>
+                    <option value="reference">Reference points</option>
+                  </select>
+                </label>
                 {catalog
+                  .filter(
+                    (s) =>
+                      siteKind === "all" ||
+                      (siteKind === "historical"
+                        ? s.kind === "historical"
+                        : !s.kind && s.id !== "lroc-observation"),
+                  )
                   .filter((s) =>
                     s.name.toLowerCase().includes(search.toLowerCase()),
                   )
-                  .map((s, i) => (
+                  .map((s) => (
                     <button
                       key={s.id}
                       className={selectedId === s.id ? "site selected" : "site"}
@@ -520,7 +563,6 @@ export default function App() {
                         select(s.latitude, s.longitude, s.id, s.name)
                       }
                     >
-                      <span className="site-num">0{i + 1}</span>
                       <span>
                         {s.name}
                         <small>
@@ -533,6 +575,12 @@ export default function App() {
                   ))}
               </div>
             </section>
+            <SurfaceExplorer
+              latitude={form.latitude}
+              longitude={form.longitude}
+              onSelect={(lat, lon) => select(lat, lon)}
+              onFootprints={setFootprints}
+            />
             <div className="explore-bottom">
               <div>
                 <span className="kicker">READY TO COMPARE?</span>
@@ -542,7 +590,13 @@ export default function App() {
                 Open example comparison <ArrowUpRight size={18} />
               </button>
             </div>
-            <div className="page-wrap"><PolarMap latitude={form.latitude} longitude={form.longitude} onSelect={select} /></div>
+            <div className="page-wrap">
+              <PolarMap
+                latitude={form.latitude}
+                longitude={form.longitude}
+                onSelect={select}
+              />
+            </div>
             <div className="source-ribbon">
               <span>BUILT WITH LUNAR DATA</span>
               {sourceLinks}
@@ -558,23 +612,19 @@ export default function App() {
               </div>
               {[
                 [
-                  "01",
                   "Find your location",
                   "Select a reference point or enter your own lunar coordinates.",
                 ],
                 [
-                  "02",
                   "Set your requirements",
                   "Choose dates, elevation thresholds and acceptable darkness.",
                 ],
                 [
-                  "03",
                   "Compare the evidence",
                   "Review Horizons calculations and save scenarios side by side.",
                 ],
-              ].map(([n, t, d]) => (
-                <article key={n}>
-                  <span>{n}</span>
+              ].map(([t, d]) => (
+                <article key={t}>
                   <h3>{t}</h3>
                   <p>{d}</p>
                 </article>
@@ -585,13 +635,24 @@ export default function App() {
         {page === "Analyze" && (
           <div className="page-wrap">
             <PageHeading
-              number="02"
               title="MISSION CONDITIONS"
               description="Set the window. Test your requirements."
             />
             <div className="audience-controls" aria-label="Display detail">
-              <button className="secondary" aria-pressed={!expertMode} onClick={() => setExpertMode(false)}>Beginner</button>
-              <button className="secondary" aria-pressed={expertMode} onClick={() => setExpertMode(true)}>Expert</button>
+              <button
+                className="secondary"
+                aria-pressed={!expertMode}
+                onClick={() => setExpertMode(false)}
+              >
+                Beginner
+              </button>
+              <button
+                className="secondary"
+                aria-pressed={expertMode}
+                onClick={() => setExpertMode(true)}
+              >
+                Expert
+              </button>
             </div>
             <div className="analysis-layout">
               <section className="settings panel">
@@ -606,16 +667,39 @@ export default function App() {
                   />
                 </label>
                 <div className="slip-controls">
-                  <NumberField label="Shift start (hours)" value={slipHours} min={-744} max={744} onChange={setSlipHours} />
-                  <button type="button" className="secondary" onClick={() => {
-                    const shifted = Date.parse(form.startTime) + slipHours * 3600000;
-                    if (!Number.isInteger(slipHours) || Math.abs(slipHours) > 744 || !Number.isFinite(shifted) || shifted < Date.UTC(2000, 0, 1) || shifted >= Date.UTC(2100, 0, 1)) {
-                      setError("Choose a whole-hour shift between −744 and 744 that keeps the start within 2000–2099.");
-                      return;
-                    }
-                    change("startTime", new Date(shifted).toISOString());
-                    setNotice("Start shifted. Calculate conditions to request or reuse matching Horizons data.");
-                  }}>Shift start</button>
+                  <NumberField
+                    label="Shift start (hours)"
+                    value={slipHours}
+                    min={-744}
+                    max={744}
+                    onChange={setSlipHours}
+                  />
+                  <button
+                    type="button"
+                    className="secondary"
+                    onClick={() => {
+                      const shifted =
+                        Date.parse(form.startTime) + slipHours * 3600000;
+                      if (
+                        !Number.isInteger(slipHours) ||
+                        Math.abs(slipHours) > 744 ||
+                        !Number.isFinite(shifted) ||
+                        shifted < Date.UTC(2000, 0, 1) ||
+                        shifted >= Date.UTC(2100, 0, 1)
+                      ) {
+                        setError(
+                          "Choose a whole-hour shift between −744 and 744 that keeps the start within 2000–2099.",
+                        );
+                        return;
+                      }
+                      change("startTime", new Date(shifted).toISOString());
+                      setNotice(
+                        "Start shifted. Calculate conditions to request or reuse matching Horizons data.",
+                      );
+                    }}
+                  >
+                    Shift start
+                  </button>
                 </div>
                 <div className="field-grid">
                   <NumberField
@@ -735,16 +819,49 @@ export default function App() {
                   {busy ? "Retrieving Horizons data…" : "Calculate conditions"}
                   <ArrowRight size={18} />
                 </button>
-                <button className="secondary wide" type="button" onClick={() => {
-                  const parsed = linkSchema.safeParse({ v: 1, name, mission: form, needs });
-                  if (!parsed.success) { setError("Enter valid mission inputs before creating a share link."); return; }
-                  const url = new URL(window.location.href);
-                  url.search = "";
-                  url.hash = "";
-                  url.searchParams.set("scenario", JSON.stringify(parsed.data));
-                  setShareUrl(url.toString());
-                }}>Create scenario link</button>
-                {shareUrl && <label>Copy scenario link<input aria-label="Scenario link" readOnly value={shareUrl} onFocus={e => e.currentTarget.select()} /><small>Contains scenario inputs. The recipient may need to calculate Horizons data.</small></label>}
+                <button
+                  className="secondary wide"
+                  type="button"
+                  onClick={() => {
+                    const parsed = linkSchema.safeParse({
+                      v: 1,
+                      name,
+                      mission: form,
+                      needs,
+                    });
+                    if (!parsed.success) {
+                      setError(
+                        "Enter valid mission inputs before creating a share link.",
+                      );
+                      return;
+                    }
+                    const url = new URL(window.location.href);
+                    url.search = "";
+                    url.hash = "";
+                    url.searchParams.set(
+                      "scenario",
+                      JSON.stringify(parsed.data),
+                    );
+                    setShareUrl(url.toString());
+                  }}
+                >
+                  Create scenario link
+                </button>
+                {shareUrl && (
+                  <label>
+                    Copy scenario link
+                    <input
+                      aria-label="Scenario link"
+                      readOnly
+                      value={shareUrl}
+                      onFocus={(e) => e.currentTarget.select()}
+                    />
+                    <small>
+                      Contains scenario inputs. The recipient may need to
+                      calculate Horizons data.
+                    </small>
+                  </label>
+                )}
                 <p className="fine">
                   Actual Horizons data. No substitute calculations on service
                   failure.
@@ -800,7 +917,17 @@ export default function App() {
                         note="Both elevation requirements met"
                       />
                     </div>
-                    <p className="panel plain-summary">This scenario meets {checks(result, resultNeeds).filter(check => check.pass).length} of your 4 chosen requirements. These checks describe sampled geometric conditions; terrain and landing safety are not assessed.</p>
+                    <p className="panel plain-summary">
+                      This scenario meets{" "}
+                      {
+                        checks(result, resultNeeds).filter(
+                          (check) => check.pass,
+                        ).length
+                      }{" "}
+                      of your 4 chosen requirements. These checks describe
+                      sampled geometric conditions; terrain and landing safety
+                      are not assessed.
+                    </p>
                     <section className="panel chart-panel">
                       <div className="section-head">
                         <div>
@@ -829,10 +956,17 @@ export default function App() {
                           onChange={(e) => setIndex(+e.target.value)}
                         />
                       </label>
-                      <button type="button" className="secondary playback-button" onClick={() => {
-                        if (!playing && index >= result.samples.length - 1) setIndex(0);
-                        setPlaying(!playing);
-                      }}>{playing ? "Pause playback" : "Play samples"}</button>
+                      <button
+                        type="button"
+                        className="secondary playback-button"
+                        onClick={() => {
+                          if (!playing && index >= result.samples.length - 1)
+                            setIndex(0);
+                          setPlaying(!playing);
+                        }}
+                      >
+                        {playing ? "Pause playback" : "Play samples"}
+                      </button>
                       {sample && (
                         <div className="sample-values">
                           <span>
@@ -875,7 +1009,16 @@ export default function App() {
                         suitability: not assessed.
                       </p>
                     </section>
-                    {expertMode ? <Provenance result={result} /> : <p className="fine">Choose Expert to inspect source details, exact requests, and raw responses. Sources &amp; methods are also available in the navigation.</p>}
+                    <SolarDiskPanel mission={result.request} />
+                    {expertMode ? (
+                      <Provenance result={result} />
+                    ) : (
+                      <p className="fine">
+                        Choose Expert to inspect source details, exact requests,
+                        and raw responses. Sources &amp; methods are also
+                        available in the navigation.
+                      </p>
+                    )}
                   </>
                 ) : (
                   <section className="empty-results">
@@ -909,7 +1052,6 @@ export default function App() {
         {page === "Compare" && (
           <div className="page-wrap">
             <PageHeading
-              number="03"
               title="COMPARE THE OPTIONS"
               description="Two locations. The same questions. Clear trade-offs."
             />
@@ -1021,9 +1163,7 @@ export default function App() {
                     <section className="comparison-cards">
                       {active.map((s) => (
                         <article className="panel compare-column" key={s.id}>
-                          <span className="kicker">
-                            SCENARIO {active.indexOf(s) + 1}
-                          </span>
+                          <span className="kicker">SAVED SCENARIO</span>
                           <h2>{s.name}</h2>
                           <p>
                             {timestamp(s.result.request.startTime)} ·{" "}
@@ -1108,7 +1248,10 @@ export default function App() {
                         }))}
                         elapsed={align === "elapsed"}
                       />
-                      <ComparisonTracks scenarios={active} elapsed={align === "elapsed"} />
+                      <ComparisonTracks
+                        scenarios={active}
+                        elapsed={align === "elapsed"}
+                      />
                       {active.map((s) => (
                         <div className="comparison-track" key={s.id}>
                           <h4>{s.name}</h4>
@@ -1156,13 +1299,12 @@ export default function App() {
         {page === "Sources" && (
           <div className="page-wrap">
             <PageHeading
-              number="04"
               title="THE EVIDENCE"
               description="Know the source. Understand the limits."
             />
             <div className="source-cards">
               <article className="panel">
-                <span className="kicker">01 / SURFACE CONTEXT</span>
+                <span className="kicker">SURFACE CONTEXT</span>
                 <h2>LROC QuickMap</h2>
                 <p>
                   Inspect imagery and terrain products in the original lunar
@@ -1177,13 +1319,13 @@ export default function App() {
                   Open QuickMap <ArrowUpRight size={17} />
                 </a>
                 <p className="fine">
-                  Integrated observation M1463278603LC: acquisition metadata,
-                  center coordinates and the red footprint on the globe. This
-                  image footprint is not a hazard map.
+                  Search nearby NAC observations, display their footprints and
+                  inspect the original products. One archived query is available
+                  offline. Footprints are image coverage, not hazard maps.
                 </p>
               </article>
               <article className="panel">
-                <span className="kicker">02 / LUNAR IMAGERY</span>
+                <span className="kicker">LUNAR IMAGERY</span>
                 <h2>NASA Moon Trek</h2>
                 <p>
                   The globe uses the LRO WAC Global Mosaic v2, assembled from 32
@@ -1203,7 +1345,7 @@ export default function App() {
                 </p>
               </article>
               <article className="panel">
-                <span className="kicker">03 / SUN & EARTH</span>
+                <span className="kicker">SUN & EARTH</span>
                 <h2>JPL Horizons</h2>
                 <p>
                   Actual apparent, airless body-center azimuth and elevation for
@@ -1255,8 +1397,9 @@ export default function App() {
                 <h2>What these results cannot tell you.</h2>
                 <ul>
                   <li>
-                    Terrain shadows, solar eclipses and mountains blocking the
-                    Sun or Earth.
+                    Terrain shadows and mountains blocking the Sun or Earth.
+                    Optional solar-disk screening is sampled and separate from
+                    availability.
                   </li>
                   <li>Surface slope, rocks, craters and landing clearance.</li>
                   <li>
@@ -1344,17 +1487,15 @@ function NumberField({
   );
 }
 function PageHeading({
-  number,
   title,
   description,
 }: {
-  number: string;
   title: string;
   description: string;
 }) {
   return (
     <div className="page-heading">
-      <span className="kicker">{number} / LUNARSIGHT</span>
+      <span className="kicker">LUNARSIGHT</span>
       <h1>
         {title}
         <span>.</span>

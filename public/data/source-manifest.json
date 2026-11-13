@@ -53,16 +53,62 @@
       "retrieval": "Recorded individually in each result and original-response cache",
       "use": "All active temporal calculations",
       "status": "integrated; three genuine cached examples"
+    },
+    {
+      "id": "historical-sites",
+      "provider": "LROC archive, linked from QuickMap product context",
+      "source": "https://lroc.im-ldi.com/images/938",
+      "title": "Spacecraft Related Coordinates \u2014 2016 Update",
+      "retrieved": "2026-11-13",
+      "frame": "Mean Earth/polar axis (ME), longitudes normalized to \u00b1180\u00b0",
+      "use": "Six Apollo lunar-module positions with original coordinate-source link",
+      "limitations": "Published image-measurement uncertainties are not a landing-precision map-to-Horizons transformation."
+    },
+    {
+      "id": "trek-local-layers",
+      "provider": "NASA Moon Trek",
+      "metadata": "/data/surface/layers.json",
+      "capabilities": [
+        "/data/surface/wac-capabilities.xml",
+        "/data/surface/hillshade-capabilities.xml",
+        "/data/surface/psr-capabilities.xml",
+        "/data/surface/slope-capabilities.xml"
+      ],
+      "retrieved": "2026-11-13",
+      "use": "On-demand regional WAC imagery, synthetic LOLA hillshade, south-polar permanent-shadow and colourized slope layers",
+      "limitations": "Image tiles are visual context only. No numeric slope, shadow fraction or terrain horizon is inferred. PSR product has zero/NoData ambiguity. Equirectangular polar display is distorted."
+    },
+    {
+      "id": "dynamic-nac",
+      "provider": "LROC QuickMap features API",
+      "source": "https://features-api.quickmap.io/collections/nac.geojson",
+      "example": "/data/nac-example.json",
+      "retrieved": "2026-11-13",
+      "use": "Bounded spatial observation queries, selectable footprints, acquisition metadata and original product links",
+      "limitations": "At most 12 observations per bounding box; not a complete inventory. Rounded footprint coordinates are not landing-zone boundaries."
+    },
+    {
+      "id": "solar-disk-screen",
+      "provider": "NASA/JPL Horizons",
+      "source": "https://ssd.jpl.nasa.gov/horizons/manual.html#obsquan",
+      "quantities": [
+        4,
+        13,
+        20
+      ],
+      "example": "/data/solar-disk-example.json",
+      "retrieved": "2026-11-13",
+      "use": "Apparent angular diameters, Earth range, Sun upper-limb elevation and approximate Earth/Sun circular-disk overlap",
+      "limitations": "Sampled disk overlap only; atmosphere, limb darkening, terrain and between-sample contacts excluded. Separate from existing availability metrics."
     }
   ],
-  "referencePoints": "Four mathematical reference coordinates plus one QuickMap observation center. None is claimed to be an approved landing site.",
+  "referencePoints": "Four mathematical references, one QuickMap image center and six verified historical Apollo LM locations; historical sites are not future landing recommendations.",
   "unavailable": [
-    "Terrain-aware horizon",
-    "Numeric slope or roughness",
+    "Terrain-aware horizon and terrain-corrected visibility",
+    "Numeric slope or roughness screening",
     "Rock/crater landing hazards",
     "Communication link budget",
-    "Landing safety rating",
-    "Solar eclipse screening in derived Sun availability"
+    "Landing safety rating"
   ],
   "legacyExcluded": [
     "Astronomy Engine outputs",

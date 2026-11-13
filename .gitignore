@@ -13,3 +13,5 @@ __pycache__/
 
 # Keep shipped ephemerides tracked; ignore additional runtime responses.
 data/horizons-cache/*.json
+
+data/geometry-cache/*.json

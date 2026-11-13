@@ -12,3 +12,7 @@ The available project was V1, not the V2 described in earlier chat history. This
 | Communication/risk implications | Geometric thresholds only | Use Earth elevation and mission conditions terminology. No link budget or landing safety claims. |
 
 New catalog uses four user-defined mathematical reference coordinates plus the center of an archived QuickMap NAC observation. None is claimed to be a mission landing site. Terrain slope, rock hazards and terrain obstruction remain unassessed until numeric products and methods are verified.
+
+## Subsequent verified additions
+
+Six historical Apollo LM coordinates are now sourced to the directly connected LROC archive (2016 ME table), distinct from the excluded Surface Data Book study points. Dynamic NAC observations, Moon Trek imagery/PSR/slope-context layers and optional Horizons disk-geometry screening are documented in FEATURE_SOURCES.md. Colourized tiles never substitute for numeric terrain measurements.

@@ -23,3 +23,15 @@ No hosted deployment. No manual comparison with the Horizons web UI was performe
 ## Latest interface and scrollbar verification
 
 Added a visible right-side native scrollbar with a stable gutter and contrasting thumb. Production build, all 40 Node checks and mobile navigation/no-overflow test passed. The prior full nine-journey browser suite also passed during the interface refinement, followed by mobile/raycast rechecks after the final camera adjustment.
+
+## Sourced feature verification
+
+- 46 Node tests passed: new spatial-box validation, antimeridian/polar handling, LROC source validation, historical-coordinate provenance, apparent angular separation, disk intersections and parsing of actual Horizons angular-size/range tables.
+- All 12 browser journeys passed across the full run and targeted reruns after correcting exact-label test selectors. New journeys cover historical catalog selection, archived NAC footprint selection, missing/out-of-coverage tiles and cached solar-disk provenance while retaining main availability results.
+- Live source checks: QuickMap returned 12 observations for the Apollo 11 bounding box. Moon Trek returned real 256 × 256 PNG PSR, colourized slope and hillshade tiles. GetCapabilities and product metadata were retained.
+- A genuine 3 March 2026 near-side Horizons disk example (5-minute samples, 24 hours) produces sampled Earth/Sun disk overlap; only sampled counts and maximum overlap are reported. No exact eclipse contact times or physical solar-power claim is made.
+- Numeric DTM/slope host failed DNS. No numeric terrain screening was substituted.
+
+## Integration with updated main
+
+Replayed the sourced-feature commit on main through 06545b7. Resolved README, App and CSS conflicts while retaining upstream sky view, polar coordinate map, sample playback, shared scenario links, aligned comparison tracks, display modes and refreshed hero styling. Added surface-tool styling follows the upstream palette. Production build, all 48 Node checks and all 12 browser journeys passed on the combined result.
