@@ -326,7 +326,7 @@ export default function App() {
                   <span className="red-line" /> LUNAR SURFACE EXPLORER
                 </span>
                 <h1>
-                  FIND A SITE<span>.</span>
+                  BEYOND THE<br />HORIZON<span>.</span>
                 </h1>
                 <p>
                   Explore the surface. Find your window.
