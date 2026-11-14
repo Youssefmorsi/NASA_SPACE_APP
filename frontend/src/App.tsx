@@ -87,7 +87,6 @@ export default function App() {
     [slipHours, setSlipHours] = useState(24),
     [shareUrl, setShareUrl] = useState(""),
     [shareFingerprint, setShareFingerprint] = useState(""),
-    [expertMode, setExpertMode] = useState(false),
     [name, setName] = useState("South polar reference"),
     [selectedId, setSelectedId] = useState("south"),
     [search, setSearch] = useState(""),
@@ -612,22 +611,6 @@ export default function App() {
               title="MISSION CONDITIONS"
               description="Set the window. Test your requirements."
             />
-            <div className="audience-controls" aria-label="Display detail">
-              <button
-                className="secondary"
-                aria-pressed={!expertMode}
-                onClick={() => setExpertMode(false)}
-              >
-                Beginner
-              </button>
-              <button
-                className="secondary"
-                aria-pressed={expertMode}
-                onClick={() => setExpertMode(true)}
-              >
-                Expert
-              </button>
-            </div>
             <div className="analysis-layout">
               <section className="settings panel">
                 <span className="kicker">MISSION PARAMETERS</span>
@@ -956,15 +939,7 @@ export default function App() {
                       </p>
                     </section>
                     <SolarDiskPanel mission={result.request} />
-                    {expertMode ? (
-                      <Provenance result={result} />
-                    ) : (
-                      <p className="fine">
-                        Choose Expert to inspect source details, exact requests,
-                        and raw responses. Sources &amp; methods are also
-                        available in the navigation.
-                      </p>
-                    )}
+                    <Provenance result={result} />
                   </>
                 ) : (
                   <section className="empty-results">
@@ -1476,7 +1451,7 @@ function PageHeading({
       <span className="kicker">LUNARSIGHT</span>
       <h1>
         {title}
-        <span>.</span>
+        {title !== "MISSION CONDITIONS" && <span>.</span>}
       </h1>
       <p>{description}</p>
     </div>
