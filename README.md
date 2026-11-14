@@ -1,5 +1,7 @@
 # LunarSight
 
+**Live demo:** https://nasa-space-app-lyart.vercel.app/
+
 A lunar location and mission-window comparison tool using **LROC QuickMap, NASA Moon Trek and JPL Horizons**. The interface follows a dark, Moon-first editorial direction with restrained NASA-inspired blue/red accents.
 
 ## Run

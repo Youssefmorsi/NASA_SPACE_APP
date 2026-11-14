@@ -75,3 +75,17 @@ test("copying a scenario keeps its settings for another location", async ({ page
   await expect(page.getByLabel("Duration (hours)")).toHaveValue("168");
   await expect(page.getByLabel("Longitude (°E)")).toHaveValue("45");
 });
+
+test("polar map explains coordinate changes and locations outside its coverage", async ({ page }) => {
+  await page.goto("/");
+  const map = page.getByRole("region", { name: "Reference map" });
+  const ring = map.locator('svg > circle[r="12"]');
+  const initialX = await ring.getAttribute("cx");
+  await page.getByLabel("Latitude (°N)", { exact: true }).fill("-85");
+  await page.getByLabel("Longitude (°E)", { exact: true }).fill("45");
+  await expect(map.getByText(/Selected location: 85\.000°S \/ 45\.000°E/)).toBeVisible();
+  await expect(ring).not.toHaveAttribute("cx", initialX!);
+  await page.getByLabel("Latitude (°N)", { exact: true }).fill("-60");
+  await expect(map.getByText(/Location cannot be shown/)).toBeVisible();
+  await expect(ring).toHaveCount(0);
+});
