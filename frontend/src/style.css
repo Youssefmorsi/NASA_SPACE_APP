@@ -4039,3 +4039,19 @@ body {
 .explorer {
   background: transparent;
 }
+
+/* Keep the same decorative stars behind all pages. */
+#root {
+  position: relative;
+  isolation: isolate;
+}
+.site-stars {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.site-stars .star-field {
+  bottom: 0;
+}

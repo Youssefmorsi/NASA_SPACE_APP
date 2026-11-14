@@ -28,7 +28,7 @@ import {
 } from "./model";
 import WindowFinder from "./components/WindowFinder";
 import HorizonsVerification from "./components/HorizonsVerification";
-import SpaceBackdrop from "./components/SpaceBackdrop";
+import SpaceBackdrop, { StarField } from "./components/SpaceBackdrop";
 import { SkyView } from "./components/SkyView";
 import { PolarMap } from "./components/PolarMap";
 import { ComparisonTracks } from "./components/ComparisonTracks";
@@ -262,6 +262,7 @@ export default function App() {
   );
   return (
     <>
+      <div className="site-stars" aria-hidden="true"><StarField /></div>
       <a className="skip" href="#main">
         Skip to content
       </a>

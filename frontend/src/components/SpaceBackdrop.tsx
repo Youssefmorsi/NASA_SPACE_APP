@@ -1,7 +1,7 @@
 import { lazy, Suspense } from "react";
 const CelestialBody = lazy(() => import("./CelestialBody"));
-/** Decorative scene only; positions and sizes do not represent ephemerides. */
-export default function SpaceBackdrop() {
+/** Decorative stars shared across pages; not scientific data. */
+export function StarField() {
   const stars = Array.from({ length: 155 }, (_, i) => ({
     x: (i * 73.137 + 11.4) % 100,
     y: (i * 37.719 + 3.8) % 100,
@@ -9,8 +9,7 @@ export default function SpaceBackdrop() {
     opacity: 0.18 + (i % 7) * 0.075,
   }));
   return (
-    <div className="space-backdrop" aria-hidden="true">
-      <div className="star-field">
+      <div className="star-field" aria-hidden="true">
         {stars.map((s, i) => (
           <span
             key={i}
@@ -24,6 +23,13 @@ export default function SpaceBackdrop() {
           />
         ))}
       </div>
+  );
+}
+
+/** Decorative scene only; positions and sizes do not represent ephemerides. */
+export default function SpaceBackdrop() {
+  return (
+    <div className="space-backdrop" aria-hidden="true">
       <div className="background-earth">
         <Suspense fallback={null}>
           <CelestialBody kind="earth" />
