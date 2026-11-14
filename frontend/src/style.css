@@ -4011,3 +4011,11 @@ header > nav {
   margin-inline: auto;
   justify-content: center;
 }
+
+/* Let the page background show through the header, without a tab underline. */
+header {
+  background: transparent;
+}
+nav button.active::after {
+  display: none;
+}
