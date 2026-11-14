@@ -4019,3 +4019,15 @@ header {
 nav button.active::after {
   display: none;
 }
+
+/* Continue the page background through the navigation and into the hero. */
+.explorer {
+  background: linear-gradient(180deg, transparent 0%, transparent 65%, #0a1018 100%);
+}
+.explorer::before {
+  content: none;
+}
+.explorer .star-field {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 110px);
+  mask-image: linear-gradient(to bottom, transparent, #000 110px);
+}
