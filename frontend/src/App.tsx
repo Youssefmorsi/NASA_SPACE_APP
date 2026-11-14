@@ -282,10 +282,6 @@ export default function App() {
             </button>
           ))}
         </nav>
-        <span className="header-note">
-          <span className="signal" />
-          LUNAR SURFACE PLANNING
-        </span>
       </header>
       <main id="main">
         {error && (
@@ -311,13 +307,10 @@ export default function App() {
             <section className="explorer">
               <SpaceBackdrop />
               <div className="hero-heading">
-                <span className="kicker">
-                  <span className="red-line" /> LUNAR SURFACE EXPLORER
-                </span>
                 <h1>
                   BEYOND THE
                   <br />
-                  HORIZON<span>.</span>
+                  HORIZON
                 </h1>
                 <p>
                   Explore the surface. Find your window.
@@ -1426,7 +1419,6 @@ export default function App() {
             <span className="wordmark-top">Lunar</span>
             <span className="wordmark-bottom">SIGHT</span>
           </span>
-          <small>LUNAR SURFACE PLANNING</small>
         </div>
         <p>
           Educational planning estimates.
