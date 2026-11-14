@@ -3996,3 +3996,9 @@ select option {
 
 /* Align the shift action with the bottom of its input. */
 .settings .slip-controls label { margin-bottom: 0; }
+
+.window-finder { margin-bottom: 1rem; }
+.window-candidates { padding-left: 1.5rem; }
+.window-candidates li { padding: 1rem 0; border-bottom: 1px solid var(--border, #38506a); }
+.window-candidates li p { margin: .5rem 0; }
+.horizons-verification { margin: 1rem 0; }

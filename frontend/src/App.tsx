@@ -26,6 +26,8 @@ import {
   type Saved,
   type Needs,
 } from "./model";
+import WindowFinder from "./components/WindowFinder";
+import HorizonsVerification from "./components/HorizonsVerification";
 import SpaceBackdrop from "./components/SpaceBackdrop";
 import { SkyView } from "./components/SkyView";
 import { PolarMap } from "./components/PolarMap";
@@ -815,6 +817,10 @@ export default function App() {
                 </p>
               </section>
               <div className="results">
+                <WindowFinder mission={form} onApply={mission => {
+                  setForm(mission); setSelectedId("custom"); setName("Mission start candidate"); setPlaying(false);
+                  setNotice(`Start candidate loaded with ${mission.stepMinutes}-minute samples. Calculate conditions to verify this window, then save it for comparison.`);
+                }} />
                 {result ? (
                   <>
                     {dirty && (
@@ -843,6 +849,7 @@ export default function App() {
                         <Plus size={16} /> Save scenario
                       </button>
                     </div>
+                    <HorizonsVerification result={result} />
                     <div className="metrics">
                       <Metric
                         label="SUN AVAILABILITY"

@@ -35,3 +35,9 @@ Added a visible right-side native scrollbar with a stable gutter and contrasting
 ## Integration with updated main
 
 Replayed the sourced-feature commit on main through 06545b7. Resolved README, App and CSS conflicts while retaining upstream sky view, polar coordinate map, sample playback, shared scenario links, aligned comparison tracks, display modes and refreshed hero styling. Added surface-tool styling follows the upstream palette. Production build, all 48 Node checks and all 12 browser journeys passed on the combined result.
+
+## Presentation release, 14 November 2026
+
+Based on upstream main `52ee4c4`. Added the sampled mission-start finder and exact Horizons verification links. Production build passed. All 63 Node checks passed (including the retained legacy engine tests, which do not validate the active Horizons adapter). All 22 browser journeys passed across the full suite and focused follow-up runs, including desktop search/apply/finer calculation, external request parameters, explicit search failure, and mobile overflow. The first finder test initially used an incorrect label selector; the corrected combobox selector passes. Tests also cover clipping fractional threshold intervals, ranking/ties, coverage bounds and agreement with individual mission summaries.
+
+A fresh live Horizons request verified the cached nearside example's first 48-hour candidate at 15-minute spacing: 17–19 November 2026, 06:00 UTC, 193 samples, 48 hours continuous Sun/Earth threshold overlap. Raw response is retained in the shipped cache. This is verification at finer temporal sampling against the same source, not independent ephemeris or terrain validation. The Vite Three.js chunk-size warning remains.

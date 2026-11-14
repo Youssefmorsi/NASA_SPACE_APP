@@ -18,3 +18,13 @@ Sun upper-limb elevation is body-center elevation + half the angular diameter. D
 ## Not implemented after access/validation checks
 
 The directly linked Apollo 11 numeric DTM and slope product download host (`pds.lroc.im-ldi.com`) failed DNS resolution during this session. The product pages and Moon Trek display services were accessible, but colourized tiles are not numeric DEMs. Therefore numeric slope/roughness percentages, terrain horizon calculation and terrain-corrected Earth/Sun visibility remain unassessed. Even when downloads work, datum/frame compatibility, observer elevation, DEM coverage and independent terrain validation are prerequisites. No substitute terrain was invented.
+
+## Sampled mission-start search and request verification (14 November 2026)
+
+The search uses only the existing JPL Horizons quantity-4 Sun/Earth pipeline and cache. `science/window-search.ts` requests one hourly ephemeris covering the start search plus a fixed mission duration. `science/window-finder.ts` clips its interpolated threshold intervals to each complete candidate mission. Candidates rank by longest continuous simultaneous overlap, total overlap, and earliest start. Only 1/6/12/24-hour start spacing and at most 744 hours of total source coverage are supported. No global optimum, terrain correction or eclipse correction is asserted. Source parameters and retrieval time accompany results.
+
+The cached nearside example uses the original 13–20 November 2026 Horizons coverage. Its earliest 48-hour full-overlap candidate was re-requested from Horizons at 15-minute sampling on 14 November 2026 and retained in `data/horizons-cache/7196708147bb56741a3cb8a9fd81a4327ed86004675f4dbdc747b281b3545e69.json`. It contains 193 genuine samples, not synthetic replacements.
+
+“Verify in Horizons” constructs fixed-origin JPL API links from the actual result's request parameters and links the official web interface. This allows request reproduction but is not independent ephemeris validation. Official documentation: https://ssd-api.jpl.nasa.gov/doc/horizons.html and https://ssd.jpl.nasa.gov/horizons/manual.html .
+
+Two additional genuine responses support the default polar demonstration: `52f53dab3b9a00f4065460e065fd9cd22f4bfcdeddde3d431469427e67b117ee.json` covers the 336-hour hourly screening span, and `23187737fef021482ccb5834875cf912b562661bf82afcbdcfb36aa365d6e989.json` verifies the selected 20 November 2026 start at 15-minute spacing for 168 hours. Finer sampling gives 151.639521 hours of continuous overlap. These requests retain the same polar coordinates, height and elevation conventions. Both records were retrieved live on 14 November 2026.

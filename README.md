@@ -59,7 +59,7 @@ The Node suite includes 26 legacy tests for the excluded old engine, kept for hi
 
 React/TypeScript/Vite frontend; lazy Three.js/OrbitControls globe; Recharts; Express backend; Zod request validation. Horizons calls are serialized, timed out at 45 seconds per target, and cached on disk by exact ephemeris parameters. Changing only thresholds reuses raw ephemerides. All active temporal outputs come from Horizons.
 
-The legacy `science/engine.ts`, SVS files and `data/sites.ts` are retained solely for historical tests; the active app does not import them. There is no hosted deployment. The chart and globe load separately; Vite still warns about the Three.js chunk.
+The legacy `science/engine.ts`, SVS files and `data/sites.ts` are retained solely for historical tests; the active app does not import them. Deployment configuration is documented in `docs/VERCEL_SETUP.md`. The chart and globe load separately; Vite still warns about the Three.js chunk.
 
 ## Container setup
 
@@ -89,3 +89,9 @@ See [feature sources and limitations](docs/FEATURE_SOURCES.md). Numeric terrain 
 ## Vercel deployment
 
 The project includes Vercel configuration for the Vite frontend and a serverless Express API. See [Vercel setup](docs/VERCEL_SETUP.md) for setup instructions, temporary cache limitations, and post-deployment checks. A live deployment has not yet been verified.
+
+## Mission start finder
+
+Analyze → **Find a mission start** compares fixed-duration missions starting across the next 1, 3, 7 or 14 days relative to the entered UTC start. A single hourly Sun/Earth ephemeris is reused across candidate starts. Rank order is longest continuous overlap, total overlap, then earlier start. The complete search coverage, including mission duration, must fit within 744 hours. These are the best sampled candidates, not a guaranteed optimum, and they exclude terrain/eclipses.
+
+**Try cached nearside example** scans 21 starts at six-hour spacing for a 48-hour mission at 0°N, 0°E. **Use this start** loads the candidate for a separate finer analysis. The first candidate, 17 November 2026 06:00 UTC, has a genuine cached 15-minute Horizons verification (193 samples). Open **Verify in Horizons** on any analysis to reproduce its exact Sun/Earth API requests or use the web interface.

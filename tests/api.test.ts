@@ -118,3 +118,12 @@ test("missing comparison payload and oversized JSON return structured client err
   assert.equal(huge.status, 413);
   assert.equal((await huge.json()).error.code, "REQUEST_TOO_LARGE");
 });
+test("mission start search uses real cached coverage and validates its bounds", async () => {
+  const response = await post("/api/find-windows", { mission: { ...request, latitude: 0, longitude: 0, durationHours: 48 }, searchHours: 120, startStepHours: 6 });
+  assert.equal(response.status, 200);
+  const result = await response.json();
+  assert.equal(result.candidateCount, 21);
+  assert.equal(result.candidates.length, 5);
+  assert.match(result.source.provenance.mode, /Cached/);
+  assert.equal((await post("/api/find-windows", { mission: { ...request, durationHours: 744 }, searchHours: 24 })).status, 400);
+});

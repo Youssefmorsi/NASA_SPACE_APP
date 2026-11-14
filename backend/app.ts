@@ -1,4 +1,5 @@
 import express from "express";
+import { findMissionWindows } from "../science/window-search.ts";
 import { analyzeHorizons, missionSchema } from "../science/horizons.ts";
 import { catalog } from "../data/catalog.ts";
 import { z, ZodError } from "zod";
@@ -18,6 +19,9 @@ app.post("/api/analyze", async (req, res, next) => {
   } catch (e) {
     next(e);
   }
+});
+app.post("/api/find-windows", async (req, res, next) => {
+  try { res.json(await findMissionWindows(req.body)); } catch (e) { next(e); }
 });
 app.post("/api/compare", async (req, res, next) => {
   try {
