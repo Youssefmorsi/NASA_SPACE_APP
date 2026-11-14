@@ -4,19 +4,6 @@
 
 A lunar location and mission-window comparison tool using **LROC QuickMap, NASA Moon Trek and JPL Horizons**. The interface follows a dark, Moon-first editorial direction with restrained NASA-inspired blue/red accents.
 
-## Run
-
-Requires Node 22.12+.
-
-```sh
-npm install
-npm run dev
-```
-
-Open http://127.0.0.1:5173. For a production build: `npm run build` then `npm start`.
-
-The development server listens on `127.0.0.1:5173` by default. Set `PORT` and `HOST` in the environment to change the bind address; keep the default local-only address for local development.
-
 ## Workflow
 
 Explore → select a mathematical reference point, the sourced QuickMap observation center, or custom coordinates → set mission dates, observer height, elevation thresholds and requirements → calculate → save → compare two scenarios. Eight full results can be saved in local browser storage. CSV exports retain settings and provenance; complete JSON and original Horizons responses are also accessible.
