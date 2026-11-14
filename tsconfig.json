@@ -14,6 +14,7 @@
   "include": [
     "frontend",
     "backend",
+    "api",
     "science",
     "data",
     "tests",

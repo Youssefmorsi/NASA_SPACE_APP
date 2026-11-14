@@ -5,7 +5,7 @@ import {
   serialized,
 } from "./horizons.ts";
 import { createHash } from "node:crypto";
-import { readFile, mkdir, writeFile } from "node:fs/promises";
+import { readCachedRecord, writeCachedRecord } from "./cache.ts";
 export function angularSeparation(
   a: { azimuth: number; elevation: number },
   b: { azimuth: number; elevation: number },
@@ -91,11 +91,10 @@ export async function solarDisk(input: unknown) {
   const key = createHash("sha256")
     .update(JSON.stringify(requests))
     .digest("hex");
-  const file = `data/geometry-cache/${key}.json`;
   let record: { sun: string; earth: string; retrievedAt: string };
   let cached = true;
   try {
-    record = JSON.parse(await readFile(file, "utf8"));
+    record = JSON.parse(await readCachedRecord("geometry-cache", key));
   } catch {
     cached = false;
     record = await serialized(async () => {
@@ -118,8 +117,7 @@ export async function solarDisk(input: unknown) {
         earth: results[1],
         retrievedAt: new Date().toISOString(),
       };
-      await mkdir("data/geometry-cache", { recursive: true });
-      await writeFile(file, JSON.stringify(r));
+      await writeCachedRecord("geometry-cache", key, JSON.stringify(r));
       return r;
     });
   }

@@ -1,0 +1,11 @@
+{
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "functions": {
+    "api/*.ts": {
+      "includeFiles": "data/horizons-cache/*.json",
+      "maxDuration": 120
+    }
+  }
+}

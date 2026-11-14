@@ -83,3 +83,7 @@ Terrain data and frame registration, a sourced candidate-site catalog, manual Ho
 Explore now includes six verified historical Apollo locations, bounded QuickMap NAC observation searches and selectable footprints. Below mission setup, open **Surface evidence** for on-demand WAC detail, LOLA hillshade, polar PSR and colourized slope layers. These are contextual images, not numeric terrain screening. Analyze includes an optional **Solar disk & eclipse screening** tool using Horizons quantities 4, 13 and 20. It does not modify the main availability values.
 
 See [feature sources and limitations](docs/FEATURE_SOURCES.md). Numeric terrain downloads were inaccessible during implementation; no terrain-corrected visibility or numeric slope percentages are claimed.
+
+## Vercel deployment
+
+The project includes Vercel configuration for the Vite frontend and a serverless Express API. See [Vercel setup](docs/VERCEL_SETUP.md) for setup instructions, temporary cache limitations, and post-deployment checks. A live deployment has not yet been verified.

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { windows, type Sample, type Interval } from "./intervals.ts";
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readCachedRecord, writeCachedRecord } from "./cache.ts";
 
 export const missionSchema = z
   .object({
@@ -194,7 +194,6 @@ export function serialized<T>(fn: () => Promise<T>): Promise<T> {
   );
   return Promise.race([p, timeout]).finally(() => clearTimeout(timer));
 }
-const cacheDir = "data/horizons-cache";
 type HorizonsRecord = { sun: string; earth: string; retrievedAt: string; signature: unknown };
 
 function recordSamples(value: unknown, request: Mission): { record: HorizonsRecord; samples: Sample[] } {
@@ -219,9 +218,8 @@ export async function analyzeHorizons(input: unknown) {
   const key = createHash("sha256")
     .update(JSON.stringify([sunParams, earthParams]))
     .digest("hex");
-  const file = `${cacheDir}/${key}.json`;
   let result: { record: HorizonsRecord; samples: Sample[]; cached: boolean };
-  const readCached = async () => recordSamples(JSON.parse(await readFile(file, "utf8")), request);
+  const readCached = async () => recordSamples(JSON.parse(await readCachedRecord("horizons-cache", key)), request);
   try {
     result = { ...await readCached(), cached: true };
   } catch {
@@ -254,8 +252,7 @@ export async function analyzeHorizons(input: unknown) {
         signature: sun.signature,
       };
       const validated = recordSamples(record, request);
-      await mkdir(cacheDir, { recursive: true });
-      await writeFile(file, JSON.stringify(record, null, 2));
+      await writeCachedRecord("horizons-cache", key, JSON.stringify(record, null, 2));
       return { ...validated, cached: false };
     });
   }
