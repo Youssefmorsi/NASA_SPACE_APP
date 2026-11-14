@@ -4031,3 +4031,11 @@ nav button.active::after {
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 110px);
   mask-image: linear-gradient(to bottom, transparent, #000 110px);
 }
+
+/* Use the lunar hero's dark gradient as the shared background on every page. */
+body {
+  background: linear-gradient(180deg, #1d2b3a 0, #0a1018 760px) fixed;
+}
+.explorer {
+  background: transparent;
+}
