@@ -267,6 +267,9 @@ export default function App() {
         Skip to content
       </a>
       <header>
+        <button className="site-logo" onClick={() => setPage("Explore")} aria-label="LunarSight home">
+          <img src="/lunarsight-logo.png" alt="" />
+        </button>
         <nav aria-label="Main navigation">
           {["Explore", "Analyze", "Compare", "Sources"].map((p) => (
             <button

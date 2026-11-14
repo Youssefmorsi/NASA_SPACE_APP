@@ -4055,3 +4055,45 @@ body {
 .site-stars .star-field {
   bottom: 0;
 }
+
+/* The supplied transparent artwork retains its original proportions. */
+.site-logo {
+  position: absolute;
+  left: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 140px;
+  height: 90px;
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+}
+.site-logo img {
+  position: absolute;
+  width: 210px;
+  max-width: none;
+  height: auto;
+  left: -34px;
+  top: -13px;
+}
+@media (max-width: 650px) {
+  header {
+    flex-direction: column;
+    gap: 0;
+    padding-top: 8px;
+  }
+  .site-logo {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: 95px;
+    height: 60px;
+    flex: none;
+  }
+  .site-logo img {
+    width: 145px;
+    left: -25px;
+    top: -10px;
+  }
+}
