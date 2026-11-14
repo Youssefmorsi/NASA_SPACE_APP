@@ -63,3 +63,15 @@ test("shared comparison tracks switch between UTC and elapsed axes", async ({ pa
   await page.getByLabel("Time axis").selectOption("elapsed");
   await expect(page.getByRole("heading", { name: "Shared elapsed time visibility tracks" })).toBeVisible();
 });
+
+test("copying a scenario keeps its settings for another location", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open example comparison" }).click();
+  await page.getByRole("button", { name: "Compare another location using South polar reference settings" }).click();
+  await expect(page.getByRole("status")).toContainText("Mission settings copied");
+  await page.locator("button.site").filter({ hasText: "Southern reference · 45°E" }).click();
+  await page.getByRole("button", { name: "Plan this location" }).click();
+  await expect(page.getByLabel("Start date & time (UTC)")).toHaveValue("2026-11-13T00:00");
+  await expect(page.getByLabel("Duration (hours)")).toHaveValue("168");
+  await expect(page.getByLabel("Longitude (°E)")).toHaveValue("45");
+});

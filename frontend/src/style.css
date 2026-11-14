@@ -3981,3 +3981,18 @@ header {
     font-size: 28px;
   }
 }
+
+/* Keep native dropdown choices legible against the dark theme. */
+select option {
+  background-color: #1d2b3a;
+  color: #f2f5f6;
+}
+
+/* Space the mission actions and the explanatory note. */
+.settings > .primary.wide + .secondary.wide {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+/* Align the shift action with the bottom of its input. */
+.settings .slip-controls label { margin-bottom: 0; }

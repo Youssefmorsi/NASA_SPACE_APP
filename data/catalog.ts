@@ -12,6 +12,7 @@ export const catalog: Site[] = [
   {
     id: "lroc-observation",
     name: "LROC observation center",
+    kind: "observation",
     latitude: -58.45,
     longitude: 2.69,
     description:
@@ -20,6 +21,7 @@ export const catalog: Site[] = [
   {
     id: "south",
     name: "South polar reference",
+    kind: "reference",
     latitude: -89,
     longitude: 0,
     description:
@@ -28,6 +30,7 @@ export const catalog: Site[] = [
   {
     id: "south-east",
     name: "Southern reference · 45°E",
+    kind: "reference",
     latitude: -85,
     longitude: 45,
     description: "User-defined point at 85°S, 45°E. Compare polar conditions.",
@@ -35,6 +38,7 @@ export const catalog: Site[] = [
   {
     id: "nearside",
     name: "Nearside reference",
+    kind: "reference",
     latitude: 0,
     longitude: 0,
     description: "Mathematical reference at the equator and prime meridian.",
@@ -42,6 +46,7 @@ export const catalog: Site[] = [
   {
     id: "farside",
     name: "Farside reference",
+    kind: "reference",
     latitude: 0,
     longitude: 180,
     description: "Mathematical reference on the opposite lunar hemisphere.",

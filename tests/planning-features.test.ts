@@ -4,7 +4,7 @@ import type { Result } from "../science/horizons.ts";
 import { nextDownCrossing } from "../frontend/src/components/SkyView.tsx";
 import { linkSchema, readScenarioLink } from "../frontend/src/scenarioLink.ts";
 import { parseBackup, serializeBackup } from "../frontend/src/scenarioBackup.ts";
-import { defaultNeeds, mergeExampleScenarios, type Saved } from "../frontend/src/model.ts";
+import { defaultNeeds, explanation, mergeExampleScenarios, type Saved } from "../frontend/src/model.ts";
 import { readFileSync } from "node:fs";
 
 const result = {
@@ -50,4 +50,26 @@ test("scenario backup round trips and rejects malformed or unsafe data", () => {
   tampered[0].result.provenance.rawDownload = "javascript:alert(1)";
   assert.throws(() => parseBackup(serializeBackup(tampered)));
   assert.throws(() => parseBackup("{}"));
+});
+
+test("comparison warns when the scenario windows or sampling differ", () => {
+  const examples: Saved[] = JSON.parse(readFileSync("public/data/examples.json", "utf8")).map((entry: Saved) => ({ ...entry, needs: defaultNeeds }));
+  const first = examples[0];
+  const same = structuredClone(first);
+  same.id = "second";
+  same.name = "Second location";
+  assert.doesNotMatch(explanation(first, same), /different dates, durations or sample intervals/);
+  assert.match(explanation(first, same), /Sun and .*Earth geometric availability/);
+  for (const change of [{ startTime: "2026-11-14T00:00:00Z" }, { durationHours: 24 }, { stepMinutes: 30 }]) {
+    const different = structuredClone(same);
+    Object.assign(different.result.request, change);
+    assert.match(explanation(first, different), /different dates, durations or sample intervals/);
+    assert.doesNotMatch(explanation(first, different), /has the longer/);
+  }
+  const differentHeight = structuredClone(same);
+  differentHeight.result.request.observerHeightKm = 1;
+  assert.match(explanation(first, differentHeight), /different observer heights/);
+  const sameInstant = structuredClone(same);
+  sameInstant.result.request.startTime = new Date(first.result.request.startTime).toISOString();
+  assert.doesNotMatch(explanation(first, sameInstant), /different dates/);
 });

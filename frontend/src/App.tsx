@@ -413,6 +413,9 @@ export default function App() {
                   {selected?.description ||
                     "User-selected coordinates. Terrain and landing suitability have not been assessed."}
                 </p>
+                <p className="fine">
+                  Category: {selected?.kind === "historical" ? "Historical landing" : selected?.kind === "observation" ? "Observation center" : "Reference point"}. Coordinates use north-positive latitude and east-positive longitude. {selected?.frame || "Coordinate frame and local terrain elevation have not been verified here."} Coordinate uncertainty: not recorded in this catalog.
+                </p>
                 {selected?.source && (
                   <a
                     className="text-link"
@@ -1093,6 +1096,21 @@ export default function App() {
                       {s.result.provenance.mode === "Imported backup (unverified)" && (
                         <p className="fine">Imported backup (unverified)</p>
                       )}
+                      <button
+                        className="text-link"
+                        aria-label={`Compare another location using ${s.name} settings`}
+                        onClick={() => {
+                          setForm({ ...s.result.request });
+                          setNeeds({ ...s.needs });
+                          setResult(null);
+                          setName(s.name);
+                          setSelectedId("custom");
+                          setNotice("Mission settings copied. Choose another location, calculate conditions, and save it for comparison.");
+                          setPage("Explore");
+                        }}
+                      >
+                        Compare another location <ArrowRight size={15} />
+                      </button>
                       <div className="card-actions">
                         <button
                           className="text-link"

@@ -55,10 +55,18 @@ export const checks = (r: Result, n: Needs) => [
   },
 ];
 export function explanation(a: Saved, b: Saved) {
-  if (JSON.stringify(a.needs) !== JSON.stringify(b.needs))
+  if ((["sun", "earth", "darkness", "overlap"] as const).some(key => a.needs[key] !== b.needs[key]))
     return "These scenarios use different requirements. Review the checks separately before comparing suitability.";
   const x = a.result,
     y = b.result;
+  if (
+    Date.parse(x.request.startTime) !== Date.parse(y.request.startTime) ||
+    x.request.durationHours !== y.request.durationHours ||
+    x.request.stepMinutes !== y.request.stepMinutes
+  )
+    return "These scenarios use different dates, durations or sample intervals. Their percentages and longest windows describe different coverage; align the time range and sampling before comparing locations directly.";
+  if (x.request.observerHeightKm !== y.request.observerHeightKm)
+    return "These scenarios use different observer heights above the reference sphere. Match the height before comparing locations directly.";
   if (
     x.request.minimumSunElevation !== y.request.minimumSunElevation ||
     x.request.minimumEarthElevation !== y.request.minimumEarthElevation
@@ -69,6 +77,7 @@ export function explanation(a: Saved, b: Saved) {
   const longer =
     x.summary.overlap.longestHours > y.summary.overlap.longestHours ? a : b;
   return (
+    `Over the same ${x.request.durationHours}-hour window, ${a.name} has ${x.summary.sun.percent.toFixed(1)}% Sun and ${x.summary.earth.percent.toFixed(1)}% Earth geometric availability; ${b.name} has ${y.summary.sun.percent.toFixed(1)}% Sun and ${y.summary.earth.percent.toFixed(1)}% Earth. ` +
     `${a.name} meets ${ac} of 4 selected requirements; ${b.name} meets ${bc} of 4. ` +
     (Math.abs(x.summary.overlap.longestHours - y.summary.overlap.longestHours) <
     0.01
